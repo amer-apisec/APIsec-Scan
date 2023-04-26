@@ -1,0 +1,1514 @@
+openapi: 3.0.0
+info:
+  title: Bango Payment API v5
+  description: |
+    Changelog
+    * 5.0.0: Initial release
+    * 5.0.1: Add the CLIENT_ACTION_REQUIRED response code to the Transaction resource's POST method. Similar to the Identity resource's POST method, this lets the Bango Platform support payment routes that require user interactions. Currently, the only action that may be returned by the API is REDIRECT. Other actions may be added later.
+  version: 5.0.1
+
+security:
+- basic: []
+paths:
+  /v5/identity/{bangoUserId}:
+    get:
+      summary: Retrieve data about a user.
+      description: Resource used to retrieve data about a user.
+      operationId: GetUser
+      parameters:
+      - name: bangoUserId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      tags:
+        - Identity
+      responses:
+        "200":
+          description: "Data about the user retrieved. | Testing - Prefer: status=200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                BAD_REQUEST:
+                  value:
+                    responseCode: BAD_REQUEST
+                    responseMessage: Invalid request.
+                  description: "Testing - Prefer: status=400"
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                UNAUTHORIZED:
+                  value:
+                    responseCode: UNAUTHORIZED
+                    responseMessage: Invalid access credentials.
+                  description: "Testing - Prefer: status=401"
+        "404":
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                NOT_FOUND:
+                  value:
+                    responseCode: NOT_FOUND
+                    responseMessage: Invalid user identifier.
+                  description: "Testing - Prefer: status=404"
+        "500":
+          description: "Unexpected error" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    responseCode: INTERNAL_ERROR
+                    responseMessage: The server encountered an unexpected condition.
+                  description: "Testing - Prefer: status=500"
+        "502":
+          description: "Connect error or Failure"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_ERROR:
+                  value:
+                    responseCode: CONNECT_ERROR
+                    responseMessage: Connection error submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=CONNECT_ERROR"
+                FAILURE:
+                  value:
+                    responseCode: FAILURE
+                    responseMessage: The payment provider returned an unspecified failure.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=FAILURE"
+        "503":
+          description: "Service unavailable"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                SERVICE_UNAVAILABLE:
+                  value:
+                    responseCode: SERVICE_UNAVAILABLE
+                    responseMessage: The server is undergoing maintenance.
+                  description: "Testing - Prefer: status=503"
+        "504":
+          description: "Connection timeout"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_TIMEOUT:
+                  value:
+                    responseCode: CONNECT_TIMEOUT
+                    responseMessage: Connection timeout submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=504"
+    delete:
+      summary: Delete a user.
+      description: Resource used to delete data about a user.
+      operationId: DeleteUser
+      parameters:
+      - name: bangoUserId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      tags:
+        - Identity
+      responses:
+        "200":
+          description: "Successful deactivation | Testing - Prefer: status=200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                BAD_REQUEST:
+                  value:
+                    responseCode: BAD_REQUEST
+                    responseMessage: Invalid request.
+                  description: "Testing - Prefer: status=400"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                UNAUTHORIZED:
+                  value:
+                    responseCode: UNAUTHORIZED
+                    responseMessage: Invalid access credentials.
+                  description: "Testing - Prefer: status=401"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                NOT_FOUND:
+                  value:
+                    responseCode: NOT_FOUND
+                    responseMessage: Invalid user identifier.
+                  description: "Testing - Prefer: status=404"
+        "500":
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    responseCode: INTERNAL_ERROR
+                    responseMessage: The server encountered an unexpected condition.
+                  description: "Testing - Prefer: status=500"
+        "503":
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                SERVICE_UNAVAILABLE:
+                  value:
+                    responseCode: SERVICE_UNAVAILABLE
+                    responseMessage: The server is undergoing maintenance.
+                  description: "Testing - Prefer: status=503"
+  /v5/identity:
+    post:
+      summary: Get a user's Bango ID (initial request)
+      description: Resource used to Get a user's Bango ID (initial request).
+      operationId: IdentifyUser-initial
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentityRequest'
+      tags:
+        - Identity
+      responses:
+        "200":
+          description: "Transaction authorized successfully | Testing - Prefer: status=200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityResponse'
+        "202":
+          description: "Request accepted" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityResponse'
+              examples:
+                "CLIENT_ACTION_REQUIRED: REDIRECT":
+                  value:
+                    responseCode: CLIENT_ACTION_REQUIRED
+                    responseMessage: An action is required in the client.
+                    sessionId: "9c7b9891-c871-4dd5-bdcc-ac25ff2412b7"
+                    bangoUserId:
+                    parameters:
+                      actions: REDIRECT
+                      url: http://www.example.com/id?param=6bd6305c
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=CLIENT_ACTION_REQUIRED, action=REDIRECT"
+                "CLIENT_ACTION_REQUIRED: SEND_SMS":
+                  value:
+                    responseCode: CLIENT_ACTION_REQUIRED
+                    responseMessage: An action is required in the client.
+                    sessionId: "9c7b9891-c871-4dd5-bdcc-ac25ff2412b7"
+                    bangoUserId:
+                    parameters:
+                      actions: SEND_SMS
+                      shortcode: 12345
+                      text: "b0b5aa40-0859-4a48-adc0-95fcab1094c9"
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=CLIENT_ACTION_REQUIRED, action=SEND_SMS"
+                "CLIENT_ACTION_REQUIRED: WAIT":
+                  value:
+                    responseCode: CLIENT_ACTION_REQUIRED
+                    responseMessage: An action is required in the client.
+                    sessionId: "9c7b9891-c871-4dd5-bdcc-ac25ff2412b7"
+                    bangoUserId:
+                    parameters:
+                      actions: WAIT
+                      suggestedWaitTimeMilliseconds: 3600
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=CLIENT_ACTION_REQUIRED, action=WAIT"
+                USER_CANCELLED:
+                  value:
+                    responseCode: USER_CANCELLED
+                    responseMessage: The user cancelled the identification flow.
+                    sessionId: "9c7b9891-c871-4dd5-bdcc-ac25ff2412b7"
+                    bangoUserId:
+                    parameters:
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_CANCELLED"
+                NOT_AVAILABLE:
+                  value:
+                    responseCode: NOT_AVAILABLE
+                    responseMessage: No valid payment methods were found.
+                    sessionId: 
+                    bangoUserId:
+                    parameters:
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=NOT_AVAILABLE"
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                BAD_REQUEST:
+                  value:
+                    responseCode: BAD_REQUEST
+                    responseMessage: Invalid request.
+                  description: "Testing - Prefer: status=400"
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                UNAUTHORIZED:
+                  value:
+                    responseCode: UNAUTHORIZED
+                    responseMessage: Invalid access credentials.
+                  description: "Testing - Prefer: status=401"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                NOT_FOUND:
+                  value:
+                    responseCode: NOT_FOUND
+                    responseMessage: Invalid session id or session expired.
+                  description: "Testing - Prefer: status=404"
+        "500":
+          description: "Unexpected error" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    responseCode: INTERNAL_ERROR
+                    responseMessage: The server encountered an unexpected condition.
+                  description: "Testing - Prefer: status=500"
+        "502":
+          description: "Connect error or Failure"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_ERROR:
+                  value:
+                    responseCode: CONNECT_ERROR
+                    responseMessage: Connection error submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=CONNECT_ERROR"
+                FAILURE:
+                  value:
+                    responseCode: FAILURE
+                    responseMessage: The payment provider returned an unspecified failure.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=FAILURE"
+        "503":
+          description: "Service unavailable"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                SERVICE_UNAVAILABLE:
+                  value:
+                    responseCode: SERVICE_UNAVAILABLE
+                    responseMessage: The server is undergoing maintenance.
+                  description: "Testing - Prefer: status=503"
+        "504":
+          description: "Connection timeout"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_TIMEOUT:
+                  value:
+                    responseCode: CONNECT_TIMEOUT
+                    responseMessage: Connection timeout submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=504"
+  /v5/identity/{sessionId}:
+    post:
+      summary: Get a user's Bango ID (subsequent request)
+      description: Resource used to Get a user's Bango ID (subsequent request).
+      operationId: IdentifyUser-subsequent
+      parameters:
+      - name: sessionId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentityRequest'
+            examples:
+                "Cancel requested action":
+                  value:
+                    action: "cancel"
+                "Supply a custom user identifier":
+                  value:
+                    thirdPartyUserId: "my-custom-id-abcde"
+                "Ask for current status":
+                  value:
+      tags:
+        - Identity
+      responses:
+        "200":
+          description: "Transaction authorized successfully | Testing - Prefer: status=200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityResponse'
+        "202":
+          description: "Request accepted" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityResponse'
+              examples:
+                "CLIENT_ACTION_REQUIRED: REDIRECT":
+                  value:
+                    responseCode: CLIENT_ACTION_REQUIRED
+                    responseMessage: An action is required in the client.
+                    sessionId: "9c7b9891-c871-4dd5-bdcc-ac25ff2412b7"
+                    bangoUserId:
+                    parameters:
+                      actions: REDIRECT
+                      url: http://www.example.com/id?param=6bd6305c
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=CLIENT_ACTION_REQUIRED, action=REDIRECT"
+                "CLIENT_ACTION_REQUIRED: SEND_SMS":
+                  value:
+                    responseCode: CLIENT_ACTION_REQUIRED
+                    responseMessage: An action is required in the client.
+                    sessionId: "9c7b9891-c871-4dd5-bdcc-ac25ff2412b7"
+                    bangoUserId:
+                    parameters:
+                      actions: SEND_SMS
+                      shortcode: 12345
+                      text: "b0b5aa40-0859-4a48-adc0-95fcab1094c9"
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=CLIENT_ACTION_REQUIRED, action=SEND_SMS"
+                "CLIENT_ACTION_REQUIRED: WAIT":
+                  value:
+                    responseCode: CLIENT_ACTION_REQUIRED
+                    responseMessage: An action is required in the client.
+                    sessionId: "9c7b9891-c871-4dd5-bdcc-ac25ff2412b7"
+                    bangoUserId:
+                    parameters:
+                      actions: WAIT
+                      suggestedWaitTimeMilliseconds: 3600
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=CLIENT_ACTION_REQUIRED, action=WAIT"
+                USER_CANCELLED:
+                  value:
+                    responseCode: USER_CANCELLED
+                    responseMessage: The user cancelled the identification flow.
+                    sessionId: "9c7b9891-c871-4dd5-bdcc-ac25ff2412b7"
+                    bangoUserId:
+                    parameters:
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_CANCELLED"
+                NOT_AVAILABLE:
+                  value:
+                    responseCode: NOT_AVAILABLE
+                    responseMessage: No valid payment methods were found.
+                    sessionId: 
+                    bangoUserId:
+                    parameters:
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=NOT_AVAILABLE"
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                BAD_REQUEST:
+                  value:
+                    responseCode: BAD_REQUEST
+                    responseMessage: Invalid request.
+                  description: "Testing - Prefer: status=400"
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                UNAUTHORIZED:
+                  value:
+                    responseCode: UNAUTHORIZED
+                    responseMessage: Invalid access credentials.
+                  description: "Testing - Prefer: status=401"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                NOT_FOUND:
+                  value:
+                    responseCode: NOT_FOUND
+                    responseMessage: Invalid session id or session expired.
+                  description: "Testing - Prefer: status=404"
+        "500":
+          description: "Unexpected error" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    responseCode: INTERNAL_ERROR
+                    responseMessage: The server encountered an unexpected condition.
+                  description: "Testing - Prefer: status=500"
+        "502":
+          description: "Connect error or Failure"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_ERROR:
+                  value:
+                    responseCode: CONNECT_ERROR
+                    responseMessage: Connection error submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=CONNECT_ERROR"
+                FAILURE:
+                  value:
+                    responseCode: FAILURE
+                    responseMessage: The payment provider returned an unspecified failure.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=FAILURE"
+        "503":
+          description: "Service unavailable"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              example:
+                value:
+                  responseCode: SERVICE_UNAVAILABLE
+                  responseMessage: The server is undergoing maintenance.
+                description: "Testing - Prefer: status=503"
+        "504":
+          description: "Connection timeout"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_TIMEOUT:
+                  value:
+                    responseCode: CONNECT_TIMEOUT
+                    responseMessage: Connection timeout submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=504"
+  /v5/transaction:
+    post:
+      summary: Authorize transaction
+      description: Resource used to authorize a transaction.
+      operationId: AuthorizeTransaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+        required: true
+      tags:
+        - Transaction
+      responses:
+        "200":
+          description: "Transaction authorized successfully | Testing - Prefer: status=200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        "202":
+          description: "Request accepted" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+              examples:
+                CLIENT_ACTION_REQUIRED:
+                  value:
+                    responseCode: CLIENT_ACTION_REQUIRED
+                    responseMessage: An action is required in the client.
+                    parameters:
+                      actions: REDIRECT
+                      url: http://www.example.com/id?param=6bd6305c
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=CLIENT_ACTION_REQUIRED"
+                NOT_AVAILABLE:
+                  value:
+                    responseCode: NOT_AVAILABLE
+                    responseMessage: No valid payment methods were found.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=NOT_AVAILABLE"
+                PRICE_NOT_SUPPORTED:
+                  value:
+                    responseCode: PRICE_NOT_SUPPORTED
+                    responseMessage: Price not supported on suggested payment methods.
+                    description: "Testing - Prefer: status=202, preference-extension: responseCode=PRICE_NOT_SUPPORTED"
+                USER_EXCEEDED_LIMIT:
+                  value:
+                    responseCode: USER_EXCEEDED_LIMIT
+                    responseMessage: User exceeded limit on suggested payment methods.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_EXCEEDED_LIMIT"
+                DECLINED:
+                  value:
+                    responseCode: DECLINED
+                    responseMessage: Payment request declined.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=DECLINED"
+                SPEED_LIMIT:
+                  value:
+                    responseCode: SPEED_LIMIT
+                    responseMessage: Request too soon after the previous one for this
+                      user.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=SPEED_LIMIT"
+                USER_BARRED:
+                  value:
+                    responseCode: USER_BARRED
+                    responseMessage: The user is not allowed to use this payment method.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_BARRED"
+                USER_INSUFFICIENT_CREDIT:
+                  value:
+                    responseCode: USER_INSUFFICIENT_CREDIT
+                    responseMessage: The user does not have enough credit for this payment.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_INSUFFICIENT_CREDIT"
+                USER_NOT_ENABLED:
+                  value:
+                    responseCode: USER_NOT_ENABLED
+                    responseMessage: User is not enabled for payments.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_NOT_ENABLED"
+                USER_SPEND_LIMIT:
+                  value:
+                    responseCode: USER_SPEND_LIMIT
+                    responseMessage: The user has hit a spend limit.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_SPEND_LIMIT"
+                USER_SUSPENDED:
+                  value:
+                    responseCode: USER_SUSPENDED
+                    responseMessage: The user is temporarily not allowed to use this
+                      payment method.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_SUSPENDED"
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                BAD_REQUEST:
+                  value:
+                    responseCode: BAD_REQUEST
+                    responseMessage: Invalid request.
+                  description: "Testing - Prefer: status=400, preference-extension: responseCode=BAD_REQUEST"
+                INVALID_BANGOUSERID:
+                  value:
+                    responseCode: INVALID_BANGOUSERID
+                    responseMessage: Invalid bangoUserId.
+                  description: "Testing - Prefer: status=400, preference-extension: responseCode=INVALID_BANGOUSERID"
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                UNAUTHORIZED:
+                  value:
+                    responseCode: UNAUTHORIZED
+                    responseMessage: Invalid access credentials.
+                  description: "Testing - Prefer: status=401"
+        "500":
+          description: "Unexpected error" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    responseCode: INTERNAL_ERROR
+                    responseMessage: The server encountered an unexpected condition.
+                  description: "Testing - Prefer: status=500"
+        "502":
+          description: "Connect error or Failure"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_ERROR:
+                  value:
+                    responseCode: CONNECT_ERROR
+                    responseMessage: Connection error submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=CONNECT_ERROR"
+                FAILURE:
+                  value:
+                    responseCode: FAILURE
+                    responseMessage: The payment provider returned an unspecified failure.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=FAILURE"
+        "503":
+          description: "Service unavailable"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                SERVICE_UNAVAILABLE:
+                  value:
+                    responseCode: SERVICE_UNAVAILABLE
+                    responseMessage: The server is undergoing maintenance.
+                  description: "Testing - Prefer: status=503"
+        "504":
+          description: "Connection timeout"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_TIMEOUT:
+                  value:
+                    responseCode: CONNECT_TIMEOUT
+                    responseMessage: Connection timeout submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=504"
+    options:
+      summary: Check available payment methods
+      description: Resource used to check available payment methods.
+      operationId: Options
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+        required: true
+      tags:
+        - Transaction
+      responses:
+        "200":
+          description: "Payment methods successfully identified | Testing - Prefer: status=200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethodResponse'
+                      
+        "202":
+          description: "Request accepted" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethodResponse'
+              examples:
+                NOT_AVAILABLE:
+                  value:
+                    responseCode: NOT_AVAILABLE
+                    responseMessage: No valid payment methods were found.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=NOT_AVAILABLE"
+                PRICE_NOT_SUPPORTED:
+                  value:
+                    responseCode: PRICE_NOT_SUPPORTED
+                    responseMessage: Price not supported on suggested payment methods.
+                    description: "Testing - Prefer: status=202, preference-extension: responseCode=PRICE_NOT_SUPPORTED"
+                USER_EXCEEDED_LIMIT:
+                  value:
+                    responseCode: USER_EXCEEDED_LIMIT
+                    responseMessage: User exceeded limit on suggested payment methods.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_EXCEEDED_LIMIT"
+        "400":
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                BAD_REQUEST:
+                  value:
+                    responseCode: BAD_REQUEST
+                    responseMessage: Invalid request.
+                  description: "Testing - Prefer: status=400, preference-extension: responseCode=BAD_REQUEST"
+                INVALID_BANGOUSERID:
+                  value:
+                    responseCode: INVALID_BANGOUSERID
+                    responseMessage: Invalid bangoUserId.
+                  description: "Testing - Prefer: status=400, preference-extension: responseCode=INVALID_BANGOUSERID"
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                UNAUTHORIZED:
+                  value:
+                    responseCode: UNAUTHORIZED
+                    responseMessage: Invalid access credentials.
+                  description: "Testing - Prefer: status=401"
+        "500":
+          description: "Unexpected error" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    responseCode: INTERNAL_ERROR
+                    responseMessage: The server encountered an unexpected condition.
+                  description: "Testing - Prefer: status=500"
+
+        "503":
+          description: "Service unavailable"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              example:
+                SERVICE_UNAVAILABLE:
+                  value:
+                    responseCode: SERVICE_UNAVAILABLE
+                    responseMessage: The server is undergoing maintenance.
+                  description: "Testing - Prefer: status=503"
+  /v5/transaction/{transactionId}:
+    get:
+      summary: Retrieve data about a transaction.
+      description: Resource used to retrieve data about a transaction.
+      operationId: GetTransaction
+      parameters:
+      - name: transactionId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      tags:
+        - Transaction
+      responses:
+        "200":
+          description: "Transaction retrieved successfully | Testing - Prefer: status=200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionGet'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                BAD_REQUEST:
+                  value:
+                    responseCode: BAD_REQUEST
+                    responseMessage: Invalid request.
+                  description: "Testing - Prefer: status=400"
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                UNAUTHORIZED:
+                  value:
+                    responseCode: UNAUTHORIZED
+                    responseMessage: Invalid access credentials.
+                  description: "Testing - Prefer: status=401"
+        "404":
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                UNAUTHORIZED:
+                  value:
+                    responseCode: NOT_FOUND
+                    responseMessage: Invalid transaction id.
+                  description: "Testing - Prefer: status=404"
+        "500":
+          description: "Unexpected error" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    responseCode: INTERNAL_ERROR
+                    responseMessage: The server encountered an unexpected condition.
+                  description: "Testing - Prefer: status=500"
+        "503":
+          description: "Service unavailable"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                SERVICE_UNAVAILABLE:
+                  value:
+                    responseCode: SERVICE_UNAVAILABLE
+                    responseMessage: The server is undergoing maintenance.
+                  description: "Testing - Prefer: status=503"
+    put:
+      summary: Capture transaction
+      description: Resource used to capture a transaction.
+      operationId: CaptureTransaction
+      parameters:
+      - name: transactionId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: If you want to capture partial payment (where supported by the payment provider), set the grossAmount and/or taxAmount to be less than the original. If this parameter is omitted, the full amount specified in the authorization request is captured.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+            examples:
+                Full capture:
+                  value:
+                Partial capture:
+                  value:
+                    bangoUserId: "987654321"
+                    paymentItems:
+                      itemsName: "My item"
+                      itemDescription: "My item description"
+                      itemCategory: "1"
+                      externalPaymentItemId: "abcd-1234"
+                      priceList:
+                        grossAmount: "2.99"
+                        currencyIso3: "USD"
+                        financialBreakdown:
+                          taxAmount: "0.00"
+        required: false
+      tags:
+        - Transaction
+      responses:
+        "200":
+          description: "Transaction captured successfully | Testing - Prefer: status=200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        "202":
+          description: "Request accepted" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+              examples:
+                DECLINED:
+                  value:
+                    responseCode: DECLINED
+                    responseMessage: Payment request declined.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=DECLINED"
+                SPEED_LIMIT:
+                  value:
+                    responseCode: SPEED_LIMIT
+                    responseMessage: Request too soon after the previous one for this
+                      user.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=SPEED_LIMIT"
+                USER_BARRED:
+                  value:
+                    responseCode: USER_BARRED
+                    responseMessage: The user is not allowed to use this payment method.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_BARRED"
+                USER_INSUFFICIENT_CREDIT:
+                  value:
+                    responseCode: USER_INSUFFICIENT_CREDIT
+                    responseMessage: The user does not have enough credit for this payment.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_INSUFFICIENT_CREDIT"
+                USER_NOT_ENABLED:
+                  value:
+                    responseCode: USER_NOT_ENABLED
+                    responseMessage: User is not enabled for payments.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_NOT_ENABLED"
+                USER_SPEND_LIMIT:
+                  value:
+                    responseCode: USER_SPEND_LIMIT
+                    responseMessage: The user has hit a spend limit.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_SPEND_LIMIT"
+                USER_SUSPENDED:
+                  value:
+                    responseCode: USER_SUSPENDED
+                    responseMessage: The user is temporarily not allowed to use this
+                      payment method.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=USER_SUSPENDED"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                BAD_REQUEST:
+                  value:
+                    responseCode: BAD_REQUEST
+                    responseMessage: Invalid request.
+                  description: "Testing - Prefer: status=400, preference-extension: responseCode=BAD_REQUEST"
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                UNAUTHORIZED:
+                  value:
+                    responseCode: UNAUTHORIZED
+                    responseMessage: Invalid access credentials.
+                  description: "Testing - Prefer: status=401"
+        "404":
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                UNAUTHORIZED:
+                  value:
+                    responseCode: NOT_FOUND
+                    responseMessage: Invalid transaction id.
+                  description: "Testing - Prefer: status=404"
+        "500":
+          description: "Unexpected error" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    responseCode: INTERNAL_ERROR
+                    responseMessage: The server encountered an unexpected condition.
+                  description: "Testing - Prefer: status=500"
+        "502":
+          description: "Connect error or Failure"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_ERROR:
+                  value:
+                    responseCode: CONNECT_ERROR
+                    responseMessage: Connection error submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=CONNECT_ERROR"
+                FAILURE:
+                  value:
+                    responseCode: FAILURE
+                    responseMessage: The payment provider returned an unspecified failure.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=FAILURE"
+        "503":
+          description: "Service unavailable"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                SERVICE_UNAVAILABLE:
+                  value:
+                    responseCode: SERVICE_UNAVAILABLE
+                    responseMessage: The server is undergoing maintenance.
+                  description: "Testing - Prefer: status=503"
+        "504":
+          description: "Connection timeout"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_TIMEOUT:
+                  value:
+                    responseCode: CONNECT_TIMEOUT
+                    responseMessage: Connection timeout submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=504"
+    delete:
+      summary: Cancel or refund a transaction.
+      description: Resource used to cancel or refund a transaction.
+      operationId: CancelTransaction
+      parameters:
+      - name: transactionId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+        required: false
+      tags:
+        - Transaction
+      responses:
+        "200":
+          description: Transaction updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+              examples:
+                REFUNDED:
+                  value:
+                    responseCode: REFUNDED
+                    responseMessage: The transaction was refunded successfully.
+                  description: "Testing - Prefer: status=200, preference-extension: responseCode=REFUNDED"
+                CANCELLED:
+                  value:
+                    responseCode: CANCELLED
+                    responseMessage: The transaction was cancelled successfully.
+                  description: "Testing - Prefer: status=200, preference-extension: responseCode=CANCELLED"
+        "202":
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+              examples:
+                CANT_REFUND:
+                  value:
+                    responseCode: CANT_REFUND
+                    responseMessage: t’s not possible to refund this transaction.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=CANT_REFUND"
+                ALREADY_REFUNDED:
+                  value:
+                    responseCode: ALREADY_REFUNDED
+                    responseMessage: The transaction has already been refunded.
+                  description: "Testing - Prefer: status=202, preference-extension: responseCode=ALREADY_REFUNDED"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                BAD_REQUEST:
+                  value:
+                    responseCode: BAD_REQUEST
+                    responseMessage: Invalid request.
+                  description: "Testing - Prefer: status=400, preference-extension: responseCode=BAD_REQUEST"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              example:
+                UNAUTHORIZED:
+                  value:
+                    responseCode: UNAUTHORIZED
+                    responseMessage: Invalid access credentials.
+                  description: "Testing - Prefer: status=401"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              example:
+                NOT_FOUND:
+                  value:
+                    responseCode: NOT_FOUND
+                    responseMessage: Invalid transaction id.
+                  description: "Testing - Prefer: status=404"
+        "500":
+          description: "Unexpected error" 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                INTERNAL_ERROR:
+                  value:
+                    responseCode: INTERNAL_ERROR
+                    responseMessage: The server encountered an unexpected condition.
+                  description: "Testing - Prefer: status=500"
+        "502":
+          description: "Connect error or Failure"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_ERROR:
+                  value:
+                    responseCode: CONNECT_ERROR
+                    responseMessage: Connection error submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=CONNECT_ERROR"
+                FAILURE:
+                  value:
+                    responseCode: FAILURE
+                    responseMessage: The payment provider returned an unspecified failure.
+                  description: "Testing - Prefer: status=502, preference-extension: responseCode=FAILURE"
+        "503":
+          description: "Service unavailable"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                SERVICE_UNAVAILABLE:
+                  value:
+                    responseCode: SERVICE_UNAVAILABLE
+                    responseMessage: The server is undergoing maintenance.
+                  description: "Testing - Prefer: status=503"
+        "504":
+          description: "Connection timeout"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                CONNECT_TIMEOUT:
+                  value:
+                    responseCode: CONNECT_TIMEOUT
+                    responseMessage: Connection timeout submitting the payment request to the payments provider.
+                  description: "Testing - Prefer: status=504"
+components:
+  schemas:
+    User:
+      required:
+      - responseCode
+      - responseMessage
+      allOf:
+      - $ref: '#/components/schemas/Response'
+      type: object
+      properties:
+        bangoUserId:
+          type: string
+          example: "987654321"
+        identificationMethodKey:
+          type: string
+          example: "SOME_NETWORK_NAME"
+        status:
+          type: string
+          example: USER_SUSPENDED
+          description: >-
+            - OK: User is enabled, and not barred or suspended
+            - USER_BARRED: User is permanently barred
+            - USER_SUSPENDED: User is temporarily suspended
+            - USER_NOT_ENABLED: User is not enabled for Direct Carrier Billing
+            - UNKNOWN: The identity provider can't currently determine the user's status
+            - INVALID_BANGOUSERID: The Bango ID specified corresponds to a deactivated user
+          enum:
+          - OK
+          - USER_BARRED
+          - USER_SUSPENDED
+          - USER_NOT_ENABLED
+          - UNKNOWN
+          - INVALID_BANGOUSERID
+          
+
+    Response:
+      required:
+      - responseCode
+      - responseMessage
+      type: object
+      properties:
+        responseCode:
+          type: string
+          example: OK
+        responseMessage:
+          type: string
+          example: Success.
+    IdentityRequest:
+      type: object
+      properties:
+        identificationMethodKey:
+          type: string
+          example: SOME_NETWORK_NAME
+        thirdPartyUserId:
+          type: string
+          example: "my-custom-id-123456789"
+        deviceCapabilitySendSms:
+          type: boolean
+          example: "false"
+        msisdn:
+          type: string
+          example: "447710900120"
+        callbackUrl:
+          type: string
+          example: "https://mystore.example.com/on-id?foo=abcde"
+        notificationUrl:
+          type: string
+          example: "https://mystore.example.com/notify"
+        action:
+          type: string
+    IdentityResponse:
+      required:
+      - responseCode
+      - responseMessage
+      allOf:
+      - $ref: '#/components/schemas/Response'
+      - type: object
+        properties:
+          sessionId:
+            type: string
+            example: "9c7b9891-c871-4dd5-bdcc-ac25ff2412b7"
+          bangoUserId:
+            type: string
+            example: "123456789"
+          parameters:
+            type: object
+    PaymentMethodResponse:
+      required:
+      - responseCode
+      - responseMessage
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Response'
+      - type: object
+        properties:
+          availablePaymentMethods:
+            description: >-
+              An array of objects, where each object has a number of properties. 
+              - type is a valid payment method type string, for example OPERATORBILLING
+              - key is an identifier for the payment provider
+              - description is a string you can show in the store's user interface to describe the payment method
+              - parameters is an object of parameters applicable to the payment provider
+              
+              The same value of type may appear more than once in the array, in this case, the value of key distinguishes the different methods.
+              If paymentMethods was included in the request, then type is always one of the strings specified in that array.
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: OPERATORBILLING
+                key:
+                  type: string
+                  example: SOME_NETWORK_NAME
+                description:
+                  type: string
+                  example: Direct operator billing
+                parameters:
+                  type: object
+                  
+              
+    TransactionResponse:
+      required:
+      - responseCode
+      - responseMessage
+      allOf:
+      - $ref: '#/components/schemas/Response'
+      - type: object
+        properties:
+          transactionId:
+            type: string
+            example: "123456789"
+    TransactionGet:
+      required:
+      - responseCode
+      - responseMessage
+      allOf:
+      - $ref: '#/components/schemas/Response'
+      - type: object
+        properties:
+          transaction:
+            required:
+            - status
+            allOf:
+            - type: object
+              properties:
+                transactionId:
+                  type: string
+                  example: "123456789"
+                bangoUserId:
+                  type: string
+                  example: "987654321"
+                  description: >-
+                    The Bango User ID of the user purchasing the item. Required to allow for per-user payment methods, and to check whether the user is permitted to purchase the item.
+                paymentMethod:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      example: OPERATORBILLING
+                    key:
+                      type: string
+                      example: SOME_NETWORK_NAME
+                    description:
+                      type: string
+                      example: Direct operator billing
+                    parameters:
+                      type: object
+                  
+                externalTransactionId:
+                  type: string
+                  example: my-tx-id-12345
+                  description: >-
+                    Your own unique, persistent transaction ID, if you have one. This helps reconciliation processes. Required to use the Bango Platform idempotency feature.
+                paymentItems:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      itemName:
+                        type: string
+                        example: My item
+                      itemDescription:
+                        type: string
+                        example: My item description
+                      itemCategory:
+                        type: string
+                        example: "1"
+                      externalPaymentItemId:
+                        type: string
+                        example: abcd-1234
+                      submerchantReferenceKey:
+                        type: string
+                        example: "submerchant1"
+                      price:
+                        $ref: '#/components/schemas/Price'
+                extensionData:
+                  $ref: '#/components/schemas/ExtensionData'
+    TransactionRequest:
+      required:
+      - paymentItems
+      - bangoUserId
+      type: object
+      properties:
+        bangoUserId:
+          type: string
+          example: "987654321"
+          description: >-
+            The Bango User ID of the user purchasing the item. Required to allow for per-user payment methods, and to check whether the user is permitted to purchase the item.
+        paymentMethods:
+          type: array
+          items:
+            type: string
+            example: OPERATORBILLING
+            description: >-
+              Payment method type strings. If specified, defines the subset of supported payment methods you would like the Bango Platform to consider including in the response. If omitted, or if empty, the Bango Platform considers all supported payment methods. The currently supported payment method type strings are OPERATORBILLING and INTERNET.
+        externalTransactionId:
+          type: string
+          example: my-tx-id-12345
+          description: >-
+            Your own unique, persistent transaction ID, if you have one. This helps reconciliation processes. Required to use the Bango Platform idempotency feature.
+        paymentItems:
+          $ref: '#/components/schemas/PaymentItem'
+        extensionData:
+          $ref: '#/components/schemas/ExtensionData'
+    FinancialBreakdown:
+      type: object
+      properties:
+        taxAmount:
+          type: string
+          example: "0"
+    PriceList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Price'
+    Price:
+      type: object
+      properties:
+        grossAmount:
+          type: string
+          example: "3.99"
+        currencyIso3:
+          type: string
+          example: USD
+        financialBreakdown:
+          $ref: '#/components/schemas/FinancialBreakdown'
+    PaymentItem:
+      description: >-
+        The item to be purchased. See Bango Payment API / API reference / Transaction Payment Items structure for information about this structure. Required to check whether the user is permitted to purchase the item, and to to check whether the prices are supported price points for the payment provider.
+      type: array
+      items:
+        type: object
+        properties:
+          itemName:
+            type: string
+            example: My item
+          itemDescription:
+            type: string
+            example: My item description
+          itemCategory:
+            type: string
+            example: "1"
+          externalPaymentItemId:
+            type: string
+            example: abcd-1234
+          submerchantReferenceKey:
+            type: string
+            example: "submerchant1"
+          priceList:
+            $ref: '#/components/schemas/PriceList'
+    ExtensionData:
+      description: Additional data related to the transaction.
+      type: object
+      properties:
+        some:
+          type: string
+          example: 123-456-789
+        some1:
+          type: string
+          example: 123-456-789
+    EchoResponse:
+      type: object
+      properties:
+        responseCode:
+          type: string
+          example: 'OK'
+        responseMessage:
+          type: string
+          example: 'Success'
+        echo:
+          type: string
+          example: 'ECHO_TEST'
+  securitySchemes:
+    basic:
+      type: http
+      description: Basic authentication
+      scheme: basic
+# Added by API Auto Mocking Plugin
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/BangoProducts/Bango-Payment-API-v5/5.0.1
