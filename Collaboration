@@ -1,0 +1,726 @@
+{
+  "info": {
+    "description": "Manage comments, notifications, and more in the Dash Hudson platform.",
+    "contact": {
+      "email": "support@dashhudson.com",
+      "name": "Dash Hudson",
+      "url": "https://dashhudson.com"
+    },
+    "license": {
+      "name": "Commercial",
+      "url": "https://dashhudson.com/terms"
+    },
+    "x-logo": {
+      "url": "https://developer.dashhudson.com/assets/logo.svg",
+      "altText": "Dash Hudson logo",
+      "href": "https://developer.dashhudson.com"
+    },
+    "title": "Collaboration API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://collaboration.dashhudson.com",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/comments": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "resource_type",
+            "required": true,
+            "description": "The type of resource the comment was made on.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "LIBRARY_BRAND_MEDIA",
+                "SCHEDULER_FACEBOOK_POST",
+                "SCHEDULER_INSTAGRAM_POST",
+                "SCHEDULER_PINTEREST_POST",
+                "SCHEDULER_TIKTOK_POST",
+                "SCHEDULER_TWITTER_POST"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "resource_id",
+            "required": true,
+            "description": "The ID of the resource the comment was made on.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "brand_id",
+            "required": true,
+            "description": "The brand's ID.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_ENTITY"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentsData"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Get comments",
+        "description": "Get a list of comments for a given resource.",
+        "tags": [
+          "Comments"
+        ]
+      },
+      "post": {
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_ENTITY"
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentData"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Comment"
+              }
+            }
+          }
+        },
+        "summary": "Create a comment",
+        "description": "Create a new comment or reply for a given resource.",
+        "tags": [
+          "Comments"
+        ]
+      }
+    },
+    "/comments/{comment_id}": {
+      "delete": {
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Delete a comment",
+        "description": "Delete a comment or reply. Restricted to the author of the comment.",
+        "tags": [
+          "Comments"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "comment_id",
+          "in": "path",
+          "description": "The ID of the comment to update.",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      ],
+      "patch": {
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_ENTITY"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentData"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateComment"
+              }
+            }
+          }
+        },
+        "summary": "Update a comment",
+        "description": "Edit the text of a comment or reply. Restricted to the author of the comment.",
+        "tags": [
+          "Comments"
+        ]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "description": "Number of results to return in a single response.",
+            "schema": {
+              "type": "integer",
+              "default": 100
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "description": "The offset of the first result to be returned.",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_ENTITY"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationsData"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Get notifications",
+        "description": "Get read & unread notifications for the authenticated user.",
+        "tags": [
+          "Notifications"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "ids",
+            "required": false,
+            "explode": true,
+            "style": "form",
+            "description": "A list of Notification IDs to mark as read",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_ENTITY"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationsData"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Notification"
+              }
+            }
+          }
+        },
+        "summary": "Mark notifications as read",
+        "description": "Takes ids as a comma delimited list of notification IDs in the query params.\nIf no ids are specified, all notifications for the user are marked as read.\n\nMarks notifications as read for the authenticated user.",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications/{notification_id}": {
+      "patch": {
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_ENTITY"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationData"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Notification"
+              }
+            }
+          }
+        },
+        "summary": "Mark as read",
+        "description": "Marks a notification as read.",
+        "tags": [
+          "Notifications"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "notification_id",
+          "in": "path",
+          "description": "The ID of the notification to update.",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      ]
+    }
+  },
+  "tags": [
+    {
+      "name": "Comments",
+      "description": "Endpoints responsible for managing comments."
+    },
+    {
+      "name": "Notifications",
+      "description": "Endpoints responsible for managing notifications."
+    }
+  ],
+  "openapi": "3.0.2",
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "code": {
+            "type": "integer",
+            "description": "Error code"
+          },
+          "errors": {
+            "type": "object",
+            "description": "Errors"
+          },
+          "status": {
+            "type": "string",
+            "description": "Error name"
+          }
+        }
+      },
+      "PaginationMetadata": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer"
+          },
+          "total_pages": {
+            "type": "integer"
+          },
+          "first_page": {
+            "type": "integer"
+          },
+          "last_page": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "previous_page": {
+            "type": "integer"
+          },
+          "next_page": {
+            "type": "integer"
+          }
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "brand_id": {
+            "type": "integer",
+            "description": "The brand's ID."
+          },
+          "edited_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "When the comment was _last_ edited."
+          },
+          "parent_id": {
+            "type": "integer",
+            "description": "The ID of the comment this comment was made in reply to."
+          },
+          "text": {
+            "type": "string",
+            "description": "The comment body."
+          },
+          "resource_id": {
+            "type": "string",
+            "description": "The ID of the resource the comment was made on."
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "When the comment was deleted."
+          },
+          "replies": {
+            "type": "array",
+            "readOnly": true,
+            "description": "The replies to this comment.",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            }
+          },
+          "id": {
+            "type": "integer",
+            "readOnly": true,
+            "description": "The comment's ID."
+          },
+          "user_id": {
+            "type": "integer",
+            "readOnly": true,
+            "description": "The author's user ID."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "When the comment was created."
+          },
+          "resource_type": {
+            "description": "The type of resource the comment was made on.",
+            "type": "string",
+            "enum": [
+              "LIBRARY_BRAND_MEDIA",
+              "SCHEDULER_FACEBOOK_POST",
+              "SCHEDULER_INSTAGRAM_POST",
+              "SCHEDULER_PINTEREST_POST",
+              "SCHEDULER_TIKTOK_POST",
+              "SCHEDULER_TWITTER_POST"
+            ]
+          }
+        },
+        "required": [
+          "brand_id",
+          "resource_id",
+          "resource_type",
+          "text"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "readOnly": true,
+            "description": "The user's email."
+          },
+          "is_active": {
+            "type": "boolean",
+            "readOnly": true,
+            "description": "The user's active status."
+          },
+          "first_name": {
+            "type": "string",
+            "readOnly": true,
+            "description": "The user's first name."
+          },
+          "id": {
+            "type": "integer",
+            "readOnly": true,
+            "description": "The user's ID."
+          },
+          "avatar_url": {
+            "type": "string",
+            "format": "url",
+            "readOnly": true,
+            "description": "The user's avatar url."
+          },
+          "last_name": {
+            "type": "string",
+            "readOnly": true,
+            "description": "The user's last name."
+          }
+        }
+      },
+      "ReferencedObjects": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "readOnly": true,
+            "description": "A map of users keyed by user ID.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "CommentsData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "readOnly": true,
+            "description": "An array of comments.",
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            }
+          },
+          "referenced_objects": {
+            "readOnly": true,
+            "description": "Objects referenced in data.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferencedObjects"
+              }
+            ]
+          }
+        }
+      },
+      "UpdateComment": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The comment body."
+          }
+        },
+        "required": [
+          "text"
+        ]
+      },
+      "CommentData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "readOnly": true,
+            "description": "A comment.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Comment"
+              }
+            ]
+          },
+          "referenced_objects": {
+            "readOnly": true,
+            "description": "Objects referenced data.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferencedObjects"
+              }
+            ]
+          }
+        }
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "comment": {
+            "readOnly": true,
+            "description": "A comment.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Comment"
+              }
+            ]
+          },
+          "type": {
+            "readOnly": true,
+            "description": "The notification's type.",
+            "type": "string",
+            "enum": [
+              "COMMENT",
+              "COMMENT_MENTION",
+              "COMMENT_REPLY"
+            ]
+          },
+          "read_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the notification was read by the user."
+          },
+          "url": {
+            "type": "string",
+            "format": "url",
+            "readOnly": true,
+            "description": "A link to where the comment was made."
+          },
+          "id": {
+            "type": "integer",
+            "readOnly": true,
+            "description": "The notification's ID."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "When the notification was created."
+          }
+        }
+      },
+      "PagingData": {
+        "type": "object",
+        "properties": {
+          "previous": {
+            "type": "string",
+            "format": "url",
+            "description": "URL to the previous page of data."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of records in the current page."
+          },
+          "next": {
+            "type": "string",
+            "format": "url",
+            "description": "URL to the next page of data."
+          }
+        }
+      },
+      "NotificationsData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "readOnly": true,
+            "description": "An array of notifications.",
+            "items": {
+              "$ref": "#/components/schemas/Notification"
+            }
+          },
+          "paging": {
+            "readOnly": true,
+            "description": "Pagination data.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PagingData"
+              }
+            ]
+          },
+          "referenced_objects": {
+            "readOnly": true,
+            "description": "Objects referenced in data.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferencedObjects"
+              }
+            ]
+          }
+        }
+      },
+      "NotificationData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "readOnly": true,
+            "description": "A notification.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Notification"
+              }
+            ]
+          },
+          "referenced_objects": {
+            "readOnly": true,
+            "description": "Objects referenced in data.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReferencedObjects"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "responses": {
+      "UNPROCESSABLE_ENTITY": {
+        "description": "Unprocessable Entity",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "DEFAULT_ERROR": {
+        "description": "Default error response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}
