@@ -1,0 +1,859 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "AMA Website API",
+    "description": "Analisys of Main Aggregates API",
+    "termsOfService": "https://www.un.org/en/about-us/terms-of-use",
+    "contact": {
+      "name": "United Nations Statistics Division - National Accounts Section",
+      "url": "https://unstats.un.org/unsd/nationalaccount/",
+      "email": "sna@un.org"
+    },
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/unsd/amaapi"
+    }
+  ],
+  "paths": {
+    "/api/Country": {
+      "get": {
+        "tags": [
+          "Country"
+        ],
+        "summary": "Returns the list of Countries/Areas in the Db.",
+        "parameters": [
+          {
+            "name": "countriesOnly",
+            "in": "query",
+            "description": "Boolean flag for retrieving countries info only, excluding regions.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Country/{id}": {
+      "get": {
+        "tags": [
+          "Country"
+        ],
+        "summary": "Returns the info for a particular country, given its M49 code",
+        "description": "Sample request:\r\nGET country/4",
+        "operationId": "GetCountry",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "M49 country code",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Country"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Country"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Country"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Data/lastupdated": {
+      "get": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Returns the last updated date of the data on the Db.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Data/limited/{countryCode}/{serieId}": {
+      "get": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Returns data for a specific country and series at the time",
+        "description": "Sample request:\r\nGET api/data/limited/36/1/?year=2000&year=2005&year=2015",
+        "operationId": "GetLimited",
+        "parameters": [
+          {
+            "name": "countryCode",
+            "in": "path",
+            "description": "M49 country code",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "serieId",
+            "in": "path",
+            "description": "Serie code (See api/series for obtaining the list of series available).",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "description": "If value is NULL, retrieves data for the last 5 years.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AmaDataItem"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AmaDataItem"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AmaDataItem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Data/availability/{countryCode}": {
+      "get": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Returns the data availability per series for the specified country/area",
+        "operationId": "GetAvailability",
+        "parameters": [
+          {
+            "name": "countryCode",
+            "in": "path",
+            "description": "M49 country/area (region) code",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataAvailability"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataAvailability"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataAvailability"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Data/basic/{serieId}": {
+      "post": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Returns data for one or more countries one series at the time.",
+        "description": "Sample request:\r\nPOST api/data/basic/2\r\n{\r\n\t\"paramCodes\":[2,142,150,419,21,9],\r\n\t\"years\":[2016,2015,2014,2013,2012,2011,2010,2009,2008,2007,2006,2005,2004,2003,\r\n\t\t     2002,2001,2000,1999,1998]\r\n}",
+        "operationId": "GetBasic",
+        "parameters": [
+          {
+            "name": "serieId",
+            "in": "path",
+            "description": "Serie code (See api/series for obtaining the list of series available).",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "paramCodes: Array containing country/area M49 codes\r\nyears: Array of years for data selection",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AmaDataRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AmaDataRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AmaDataRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AmaDataRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AmaDataItem"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AmaDataItem"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AmaDataItem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Data/footnotes": {
+      "post": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Returns the associated footnotes for the combination country/series/years indicated.",
+        "description": "Sample request:\r\nPOST api/data/footnotes\r\n[\r\n    [840,8],\r\n    [21,23],\r\n    [1970,1980]\r\n]",
+        "operationId": "GetFootnotes",
+        "requestBody": {
+          "description": "Array of arrays containing:\r\n            Array of country M49 codes,\r\n            Array of series codes,\r\n            Array of years",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "type": "array",
+                "items": { }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": { }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": { }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Footnote"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Footnote"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Footnote"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/File/{id}": {
+      "get": {
+        "tags": [
+          "File"
+        ],
+        "summary": "Returns the selected file.",
+        "operationId": "GetFile",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "File ID (can be queried by api/file first).",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/File": {
+      "get": {
+        "tags": [
+          "File"
+        ],
+        "summary": "Return the list of currently available data files",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Metadata/{countryCode}/{groupId}": {
+      "get": {
+        "tags": [
+          "Metadata"
+        ],
+        "summary": "Returns metadata information according to the group of tables specified",
+        "operationId": "GetMetadata",
+        "parameters": [
+          {
+            "name": "countryCode",
+            "in": "path",
+            "description": "M49 country code",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "groupId",
+            "in": "path",
+            "description": "101 - GDP at current prices related tables\r\n102 - Real GDP related tables\r\n103 - GNI related tables\r\n201 - Value added related tables\r\n202 - Value added at constant prices related tables",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Metadata/fiscalyearnotes": {
+      "get": {
+        "tags": [
+          "Metadata"
+        ],
+        "summary": "Returns the different fiscal year types other than calendar year and the countries that use them.",
+        "operationId": "GetFiscalYearTypes",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/FiscalYear"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FiscalYear"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FiscalYear"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Metadata/glossary/{id}": {
+      "get": {
+        "tags": [
+          "Metadata"
+        ],
+        "summary": "Gets the list of terms for the glossary section of the client. Provide 0 as id to obtain the full list of terms.",
+        "operationId": "GetGlossary",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Glossary term id. Pass 0 to retrieve them all.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fullDefinition",
+            "in": "query",
+            "description": "Boolean flag to determine if retrieve full definition or just the term name.",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlossaryItem"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlossaryItem"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlossaryItem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Series": {
+      "get": {
+        "tags": [
+          "Series"
+        ],
+        "summary": "Returns a list of currently available series.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Series/{id}": {
+      "get": {
+        "tags": [
+          "Series"
+        ],
+        "summary": "Returns the series info based on the series id provided.",
+        "operationId": "GetSerie",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Series"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Series"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Series"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/series/years": {
+      "get": {
+        "tags": [
+          "Series"
+        ],
+        "summary": "Returns a list of fiscal years on db.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AmaDataItem": {
+        "type": "object",
+        "properties": {
+          "countryCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "serieCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "serieName": {
+            "type": "string",
+            "nullable": true
+          },
+          "countryName": {
+            "type": "string",
+            "nullable": true
+          },
+          "fiscalYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "itemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "itemName": {
+            "type": "string",
+            "nullable": true
+          },
+          "observationValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "observationNote": {
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AmaDataRequest": {
+        "type": "object",
+        "properties": {
+          "paramCodes": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "years": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Country": {
+        "type": "object",
+        "properties": {
+          "CountryCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CountryName": {
+            "type": "string",
+            "nullable": true
+          },
+          "CurrencyName": {
+            "type": "string",
+            "nullable": true
+          },
+          "IsCountry": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DataAvailability": {
+        "type": "object",
+        "properties": {
+          "SeriesCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SeriesLevel": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SeriesName": {
+            "type": "string",
+            "nullable": true
+          },
+          "GroupId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "CountryCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "AreaName": {
+            "type": "string",
+            "nullable": true
+          },
+          "FirstYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "LastYear": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FiscalYear": {
+        "type": "object",
+        "properties": {
+          "FiscalYearTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "FiscalYearTypeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Countries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Country"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Footnote": {
+        "type": "object",
+        "properties": {
+          "CountryCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "CountryName": {
+            "type": "string",
+            "nullable": true
+          },
+          "FiscalYear": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ItemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ItemName": {
+            "type": "string",
+            "nullable": true
+          },
+          "FootnoteText": {
+            "type": "string",
+            "nullable": true
+          },
+          "GroupID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "SeriesType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GlossaryItem": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "Term": {
+            "type": "string",
+            "nullable": true
+          },
+          "TermDefinition": {
+            "type": "string",
+            "nullable": true
+          },
+          "OtherReferences": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Metadata": {
+        "type": "object",
+        "properties": {
+          "GroupId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ItemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "OrganisationName": {
+            "type": "string",
+            "nullable": true
+          },
+          "PublicationName": {
+            "type": "string",
+            "nullable": true
+          },
+          "MethodName": {
+            "type": "string",
+            "nullable": true
+          },
+          "IndicatorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "Years": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Series": {
+        "type": "object",
+        "properties": {
+          "SerieCode": {
+            "type": "number",
+            "format": "double"
+          },
+          "SerieLevel": {
+            "type": "number",
+            "format": "double"
+          },
+          "SerieName": {
+            "type": "string",
+            "nullable": true
+          },
+          "GroupId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "UnitMeasureType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
