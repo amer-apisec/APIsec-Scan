@@ -1,0 +1,1793 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "API Wallet description",
+    "version" : "1.0.0",
+    "title" : "Wallet API",
+    "contact" : {
+      "name" : "EDCI Support",
+      "url" : "http://www.edcisupport.eu",
+      "email" : "edci.support@eu.com"
+    }
+  },
+  "host" : "localhost:8080/europass2/edci-wallet",
+  "basePath" : "/api",
+  "tags" : [ {
+    "name" : "V1/credentials"
+  }, {
+    "name" : "V1/sharelinks"
+  }, {
+    "name" : "V1/wallets"
+  } ],
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/v1/sharelinks" : {
+      "get" : {
+        "tags" : [ "V1/sharelinks" ],
+        "summary" : "Get Share Link given a wallet address",
+        "description" : "",
+        "operationId" : "listShareLink",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "sort",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "direction",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "userId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "expired",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PagedResourcesShareLinkInfoView"
+            }
+          },
+          "404" : {
+            "description" : "Wallet not Found",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/sharelinks/{_shareHash}" : {
+      "get" : {
+        "tags" : [ "V1/sharelinks" ],
+        "summary" : "Get Share Link of a Credential",
+        "description" : "",
+        "operationId" : "getShareLink",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "_shareHash",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ResourceShareLinkInfoView"
+            }
+          },
+          "403" : {
+            "description" : "The link is invalid or has expired",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "V1/sharelinks" ],
+        "summary" : "Update Share Link of a Credential",
+        "description" : "",
+        "operationId" : "updateShareLink",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "_shareHash",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Share link new expiration date in format: yyyy-MM-dd'T'HH:mm:ssXXX",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ShareLinkView"
+          }
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ResourceShareLinkInfoView"
+            }
+          },
+          "400" : {
+            "description" : "Invalid body request",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "403" : {
+            "description" : "The link is invalid",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "404" : {
+            "description" : "The link is not found",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "V1/sharelinks" ],
+        "summary" : "Delete Share Link of a Credential",
+        "description" : "",
+        "operationId" : "deleteShareLink",
+        "parameters" : [ {
+          "name" : "_shareHash",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ResourceShareLinkInfoView"
+            }
+          },
+          "403" : {
+            "description" : "The link is invalid",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/sharelinks/{_shareHash}/credentials" : {
+      "get" : {
+        "tags" : [ "V1/sharelinks" ],
+        "summary" : "Download Shared Link Credential",
+        "description" : "",
+        "operationId" : "getCredentialFromSharelink",
+        "produces" : [ "application/octet-stream" ],
+        "parameters" : [ {
+          "name" : "_shareHash",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string",
+                "format" : "byte"
+              }
+            }
+          },
+          "403" : {
+            "description" : "The link is invalid or has expired",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/sharelinks/{_shareHash}/presentation" : {
+      "get" : {
+        "tags" : [ "V1/sharelinks" ],
+        "summary" : "Get Shared Presentation PDF",
+        "description" : "",
+        "operationId" : "downloadShareLinkPresentationPDF",
+        "produces" : [ "application/pdf" ],
+        "parameters" : [ {
+          "name" : "_shareHash",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ByteArrayResource"
+            }
+          },
+          "403" : {
+            "description" : "The link is invalid or has expired",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/sharelinks/{_shareHash}/verify" : {
+      "get" : {
+        "tags" : [ "V1/sharelinks" ],
+        "summary" : "Get verification from a credential JSON-LD",
+        "description" : "",
+        "operationId" : "getShareLinkCredentialVerification",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "_shareHash",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/VerificationCheckView"
+              }
+            }
+          },
+          "403" : {
+            "description" : "The link is invalid or has expired",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "404" : {
+            "description" : "Wallet not Found",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets" : {
+      "post" : {
+        "tags" : [ "V1/wallets" ],
+        "summary" : "Create a Wallet from a userID and email",
+        "description" : "",
+        "operationId" : "createWallet",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The wallet create request, all fields are required",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/WalletCreateView"
+          }
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/WalletCreateResponseView"
+            }
+          },
+          "409" : {
+            "description" : "A Wallet already exists for this User mail/Id",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/bulk" : {
+      "post" : {
+        "tags" : [ "V1/wallets" ],
+        "summary" : "Create a temporary Wallet from an email",
+        "description" : "",
+        "operationId" : "createBulkWallet",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The wallet create request, all fields are required",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/WalletCreateBulkView"
+          }
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/WalletCreateBulkResponseView"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/credentials/presentation" : {
+      "post" : {
+        "tags" : [ "V1/credentials" ],
+        "summary" : "Downloads a file containing verifiable presentation of the credential",
+        "description" : "",
+        "operationId" : "createPDF",
+        "consumes" : [ "multipart/form-data" ],
+        "produces" : [ "application/pdf" ],
+        "parameters" : [ {
+          "name" : "file",
+          "in" : "formData",
+          "required" : true,
+          "type" : "file"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ByteArrayResource"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/email/{userEmail}/credentials" : {
+      "post" : {
+        "tags" : [ "V1/credentials" ],
+        "summary" : "Add a credential XML to a temporary or inexistent wallet (if this feature is enabled)",
+        "description" : "",
+        "operationId" : "addCredentialByEmail",
+        "consumes" : [ "multipart/form-data" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "_credential",
+          "in" : "formData",
+          "description" : "The file containing the credential",
+          "required" : false,
+          "type" : "file"
+        }, {
+          "name" : "userEmail",
+          "in" : "path",
+          "description" : "The wallet's email or the email used to create the temporary wallet if it's not registered yet",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "sendEmail",
+          "in" : "query",
+          "description" : "sendEmail",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false,
+          "enum" : [ "true/false" ]
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/CredentialView"
+            }
+          },
+          "400" : {
+            "description" : "The file uploaded is not a valid Europass Digital Credential",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "404" : {
+            "description" : "No wallet exists with the given Wallet address",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "409" : {
+            "description" : "A credential with the same ID already exists",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/{userId}" : {
+      "get" : {
+        "tags" : [ "V1/wallets" ],
+        "summary" : "Returns a wallet's information",
+        "description" : "",
+        "operationId" : "getWallet",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The User Id to be retrieved",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/WalletResponseView"
+            }
+          },
+          "404" : {
+            "description" : "No wallet exists with the given User Id",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "V1/wallets" ],
+        "summary" : "Modify a Wallet's information",
+        "description" : "",
+        "operationId" : "modifyWallet",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The User Id to be modified",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The wallet update request",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/WalletModifyView"
+          }
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/WalletResponseView"
+            }
+          },
+          "404" : {
+            "description" : "No wallet exists with the given User Id",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "V1/wallets" ],
+        "summary" : "Deletes a existing wallet",
+        "description" : "",
+        "operationId" : "deleteWallet",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The User Id to be deleted",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "404" : {
+            "description" : "No wallet exists with the given User Id",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/{userId}/credentials" : {
+      "get" : {
+        "tags" : [ "V1/credentials" ],
+        "summary" : "CustomList the existing credentials on a wallet based on a locale",
+        "description" : "",
+        "operationId" : "listCredentials",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The Wallet Address where the credentials are stored",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : " The desired locale for the credential's texts",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/CredentialView"
+              }
+            }
+          },
+          "404" : {
+            "description" : "No wallet exists with the given Wallet address",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "V1/credentials" ],
+        "summary" : "Add a credential to a existing wallet",
+        "description" : "",
+        "operationId" : "addCredential",
+        "consumes" : [ "multipart/form-data" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "_credential",
+          "in" : "formData",
+          "description" : "The file containing the credential",
+          "required" : false,
+          "type" : "file"
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The wallet Address where the credential will be added",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "sendEmail",
+          "in" : "query",
+          "description" : "sendEmail",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false,
+          "enum" : [ "true/false" ]
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/CredentialView"
+            }
+          },
+          "400" : {
+            "description" : "The file uploaded is not a valid Europass Digital Credential",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "404" : {
+            "description" : "No wallet exists with the given Wallet address",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "409" : {
+            "description" : "A credential with the same ID already exists",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/{userId}/credentials/verifiable" : {
+      "post" : {
+        "tags" : [ "V1/credentials" ],
+        "summary" : "Downloads a file containing verifiable presentation of the credential",
+        "description" : "",
+        "operationId" : "createPDF",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/pdf" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/CredentialBaseView"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The Wallet Address where the credentials are stored",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "expirationDate",
+          "in" : "query",
+          "description" : "The expiration date for the sharelink that will contain the PDF in format: yyyy-MM-dd",
+          "required" : false,
+          "type" : "string",
+          "format" : "date-time"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ByteArrayResource"
+            }
+          },
+          "404" : {
+            "description" : "Credential not Found",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/{userId}/credentials/{uuid}" : {
+      "get" : {
+        "tags" : [ "V1/credentials" ],
+        "summary" : "Downloads a credential JSON-LD file",
+        "description" : "",
+        "operationId" : "getCredential",
+        "produces" : [ "application/octet-stream" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The Wallet Address where the credentials are stored",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "uuid",
+          "in" : "path",
+          "description" : "The ID of the credential",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "retrieveVP",
+          "in" : "query",
+          "description" : "retrieveVP",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string",
+                "format" : "byte"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Credential or Wallet not Found",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "V1/credentials" ],
+        "summary" : "Delete an existing credential",
+        "description" : "",
+        "operationId" : "deleteCredential",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The Wallet Address where the credentials are stored",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "uuid",
+          "in" : "path",
+          "description" : "The ID of the credential",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "404" : {
+            "description" : "Credential or Wallet not Found",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/{userId}/credentials/{uuid}/diploma" : {
+      "get" : {
+        "tags" : [ "V1/credentials" ],
+        "summary" : "Downloads a credential's diploma",
+        "description" : "",
+        "operationId" : "downloadDiplomaMultipage",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The Wallet Address where the credentials are stored",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "uuid",
+          "in" : "path",
+          "description" : "The ID of the credential",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ResourceEuropassDiplomaDTO"
+            }
+          },
+          "404" : {
+            "description" : "Credential or Wallet not Found",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/{userId}/credentials/{uuid}/sharelink" : {
+      "post" : {
+        "tags" : [ "V1/credentials" ],
+        "summary" : "Create Share Link of a Credential",
+        "description" : "",
+        "operationId" : "createShareLink",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The Wallet Address where the credentials are stored",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "uuid",
+          "in" : "path",
+          "description" : "The ID of the credential",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ShareLinkView"
+          }
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ResourceShareLinkInfoView"
+            }
+          },
+          "404" : {
+            "description" : "Credential or Wallet not Found",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/{userId}/credentials/{uuid}/thumbnail" : {
+      "get" : {
+        "tags" : [ "V1/credentials" ],
+        "summary" : "Downloads a credential's diploma thmumbnail",
+        "description" : "",
+        "operationId" : "getThumbnail",
+        "produces" : [ "image/jpeg" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The Wallet Address where the credentials are stored",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "uuid",
+          "in" : "path",
+          "description" : "The ID of the credential",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string",
+                "format" : "byte"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Credential or Wallet not Found",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/{userId}/credentials/{uuid}/verify" : {
+      "get" : {
+        "tags" : [ "V1/credentials" ],
+        "summary" : "Get verification report from a credential ID",
+        "description" : "",
+        "operationId" : "verifyCredential",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "The Wallet Address where the credentials are stored",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "uuid",
+          "in" : "path",
+          "description" : "The credential uuid",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "locale",
+          "in" : "query",
+          "description" : "locale",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "Oauth access token",
+          "required" : true,
+          "type" : "string",
+          "default" : "Bearer [accessToken]"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/VerificationCheckView"
+              }
+            }
+          },
+          "404" : {
+            "description" : "Credential or Wallet not Found",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          },
+          "500" : {
+            "description" : "There's been an unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/ApiErrorMessage"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "ApiErrorMessage" : {
+      "type" : "object",
+      "properties" : {
+        "code" : {
+          "type" : "string"
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "path" : {
+          "type" : "string"
+        },
+        "affectedAssets" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        }
+      }
+    },
+    "ByteArrayResource" : {
+      "type" : "object",
+      "properties" : {
+        "byteArray" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "byte"
+          }
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "inputStream" : {
+          "$ref" : "#/definitions/InputStream"
+        },
+        "readable" : {
+          "type" : "boolean"
+        },
+        "open" : {
+          "type" : "boolean"
+        },
+        "file" : {
+          "type" : "file"
+        },
+        "url" : {
+          "type" : "string",
+          "format" : "url"
+        },
+        "uri" : {
+          "type" : "string",
+          "format" : "uri"
+        },
+        "filename" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CredentialBaseView" : {
+      "type" : "object",
+      "properties" : {
+        "uuid" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CredentialView" : {
+      "type" : "object",
+      "properties" : {
+        "uuid" : {
+          "type" : "string"
+        },
+        "viewerURL" : {
+          "type" : "string"
+        },
+        "title" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "profile" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "EuropassDiplomaDTO" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uri"
+        },
+        "base64DiplomaImages" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "logo" : {
+          "type" : "string"
+        },
+        "availableLanguages" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "InputStream" : {
+      "type" : "object"
+    },
+    "Link" : {
+      "type" : "object",
+      "properties" : {
+        "rel" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "href" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "hreflang" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "media" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "title" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "deprecation" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "LinkFieldView" : {
+      "type" : "object",
+      "properties" : {
+        "link" : {
+          "type" : "string",
+          "format" : "uri"
+        },
+        "title" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "targetFramework" : {
+          "type" : "string"
+        },
+        "titleAvailableLangs" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "PageMetadata" : {
+      "type" : "object",
+      "properties" : {
+        "size" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          },
+          "readOnly" : true
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          },
+          "readOnly" : true
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          },
+          "readOnly" : true
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          },
+          "readOnly" : true
+        }
+      }
+    },
+    "PagedResources" : {
+      "type" : "object",
+      "properties" : {
+        "links" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "link",
+            "namespace" : "http://www.w3.org/2005/Atom"
+          },
+          "readOnly" : true,
+          "items" : {
+            "xml" : {
+              "name" : "link"
+            },
+            "$ref" : "#/definitions/Link"
+          }
+        },
+        "content" : {
+          "type" : "array",
+          "xml" : {
+            "wrapped" : true
+          },
+          "readOnly" : true,
+          "items" : {
+            "type" : "object"
+          }
+        },
+        "page" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/PageMetadata"
+        }
+      },
+      "xml" : {
+        "name" : "pagedEntities",
+        "namespace" : ""
+      }
+    },
+    "PagedResourcesShareLinkInfoView" : {
+      "type" : "object",
+      "properties" : {
+        "links" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "link",
+            "namespace" : "http://www.w3.org/2005/Atom"
+          },
+          "readOnly" : true,
+          "items" : {
+            "xml" : {
+              "name" : "link"
+            },
+            "$ref" : "#/definitions/Link"
+          }
+        },
+        "content" : {
+          "type" : "array",
+          "xml" : {
+            "wrapped" : true
+          },
+          "readOnly" : true,
+          "items" : {
+            "$ref" : "#/definitions/ShareLinkInfoView"
+          }
+        },
+        "page" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/PageMetadata"
+        }
+      },
+      "xml" : {
+        "name" : "pagedEntities",
+        "namespace" : ""
+      }
+    },
+    "Resource" : {
+      "type" : "object",
+      "properties" : {
+        "links" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "link",
+            "namespace" : "http://www.w3.org/2005/Atom"
+          },
+          "readOnly" : true,
+          "items" : {
+            "xml" : {
+              "name" : "link"
+            },
+            "$ref" : "#/definitions/Link"
+          }
+        }
+      }
+    },
+    "ResourceEuropassDiplomaDTO" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uri"
+        },
+        "base64DiplomaImages" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "logo" : {
+          "type" : "string"
+        },
+        "availableLanguages" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "links" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "link",
+            "namespace" : "http://www.w3.org/2005/Atom"
+          },
+          "readOnly" : true,
+          "items" : {
+            "xml" : {
+              "name" : "link"
+            },
+            "$ref" : "#/definitions/Link"
+          }
+        }
+      }
+    },
+    "ResourceShareLinkInfoView" : {
+      "type" : "object",
+      "required" : [ "expirationDate" ],
+      "properties" : {
+        "expirationDate" : {
+          "type" : "string"
+        },
+        "shareHash" : {
+          "type" : "string"
+        },
+        "creationDate" : {
+          "type" : "string"
+        },
+        "expired" : {
+          "type" : "boolean"
+        },
+        "links" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "link",
+            "namespace" : "http://www.w3.org/2005/Atom"
+          },
+          "readOnly" : true,
+          "items" : {
+            "xml" : {
+              "name" : "link"
+            },
+            "$ref" : "#/definitions/Link"
+          }
+        }
+      }
+    },
+    "ShareLinkInfoView" : {
+      "type" : "object",
+      "required" : [ "expirationDate" ],
+      "properties" : {
+        "expirationDate" : {
+          "type" : "string"
+        },
+        "shareHash" : {
+          "type" : "string"
+        },
+        "creationDate" : {
+          "type" : "string"
+        },
+        "expired" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "ShareLinkView" : {
+      "type" : "object",
+      "required" : [ "expirationDate" ],
+      "properties" : {
+        "expirationDate" : {
+          "type" : "string"
+        }
+      }
+    },
+    "VerificationCheckView" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "type" : {
+          "$ref" : "#/definitions/LinkFieldView"
+        },
+        "status" : {
+          "$ref" : "#/definitions/LinkFieldView"
+        },
+        "longDescription" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "longDescrAvailableLangs" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "descrAvailableLangs" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "WalletCreateBulkElemView" : {
+      "type" : "object",
+      "required" : [ "userEmail" ],
+      "properties" : {
+        "userEmail" : {
+          "type" : "string"
+        }
+      }
+    },
+    "WalletCreateBulkResponseElemView" : {
+      "type" : "object",
+      "properties" : {
+        "userEmail" : {
+          "type" : "string"
+        },
+        "errorCode" : {
+          "type" : "string"
+        },
+        "errorMsg" : {
+          "type" : "string"
+        }
+      }
+    },
+    "WalletCreateBulkResponseView" : {
+      "type" : "object",
+      "properties" : {
+        "errors" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/WalletCreateBulkResponseElemView"
+          }
+        }
+      }
+    },
+    "WalletCreateBulkView" : {
+      "type" : "object",
+      "properties" : {
+        "wallets" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/WalletCreateBulkElemView"
+          }
+        }
+      }
+    },
+    "WalletCreateResponseView" : {
+      "type" : "object",
+      "properties" : {
+        "walletAddress" : {
+          "type" : "string"
+        }
+      }
+    },
+    "WalletCreateView" : {
+      "type" : "object",
+      "required" : [ "userEmail", "userId" ],
+      "properties" : {
+        "userId" : {
+          "type" : "string"
+        },
+        "userEmail" : {
+          "type" : "string"
+        }
+      }
+    },
+    "WalletModifyView" : {
+      "type" : "object",
+      "required" : [ "userEmail" ],
+      "properties" : {
+        "userEmail" : {
+          "type" : "string"
+        }
+      }
+    },
+    "WalletResponseView" : {
+      "type" : "object",
+      "properties" : {
+        "walletAddress" : {
+          "type" : "string"
+        },
+        "userId" : {
+          "type" : "string"
+        },
+        "userEmail" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}
