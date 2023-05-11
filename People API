@@ -1,0 +1,669 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "CloudM Manage People API v4",
+    "version" : "v4",
+    "title" : "People API"
+  },
+  "basePath" : "/_ah/api/people/v4",
+  "tags" : [ {
+    "name" : "People"
+  } ],
+  "paths" : {
+    "/{domainId}" : {
+      "post" : {
+        "tags" : [ "People" ],
+        "summary" : "Creates a new user profile in the specified domain",
+        "description" : "",
+        "operationId" : "create",
+        "parameters" : [ {
+          "name" : "domainId",
+          "in" : "path",
+          "description" : "The id (name) of the primary domain",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The new profile",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Profile"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Profile"
+            }
+          },
+          "400" : {
+            "description" : "Profile already exists or missing/invalid values passed"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "security" : [ {
+          "Bearer" : [ ]
+        } ]
+      }
+    },
+    "/{domainId}/onboard/scheduled" : {
+      "post" : {
+        "tags" : [ "People" ],
+        "summary" : "Schedules a user to be created on the date provided in \"provisionDate\"",
+        "description" : "",
+        "operationId" : "scheduled",
+        "parameters" : [ {
+          "name" : "domainId",
+          "in" : "path",
+          "description" : "The id (name) of the primary domain",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The new profile",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Profile"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Profile"
+            }
+          },
+          "400" : {
+            "description" : "Profile already exists or missing/invalid values passed"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          }
+        },
+        "security" : [ {
+          "Bearer" : [ ]
+        } ]
+      }
+    },
+    "/{domainId}/{profileId}" : {
+      "get" : {
+        "tags" : [ "People" ],
+        "summary" : "Fetches the profile for the specified user in the specified domain",
+        "description" : "",
+        "operationId" : "get",
+        "parameters" : [ {
+          "name" : "profileId",
+          "in" : "path",
+          "description" : "The id (email) of the required profile",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "domainId",
+          "in" : "path",
+          "description" : "The id (name) of the primary domain",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Profile"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Specified profile not found"
+          }
+        },
+        "security" : [ {
+          "Bearer" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "People" ],
+        "summary" : "Does a partial update (patch) of the profile for the specified user in the specified domain",
+        "description" : "",
+        "operationId" : "patch",
+        "parameters" : [ {
+          "name" : "profileId",
+          "in" : "path",
+          "description" : "The id (email) of the profile to be patched",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "domainId",
+          "in" : "path",
+          "description" : "The id (name) of the primary domain",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The properties on the profile to be updated",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Profile"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Profile"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Specified profile not found"
+          }
+        },
+        "security" : [ {
+          "Bearer" : [ ]
+        } ]
+      },
+      "put" : {
+        "tags" : [ "People" ],
+        "summary" : "Updates and replaces an existing user profile in the specified domain",
+        "description" : "",
+        "operationId" : "replace",
+        "parameters" : [ {
+          "name" : "profileId",
+          "in" : "path",
+          "description" : "The id (email) of the profile to be replaced",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "domainId",
+          "in" : "path",
+          "description" : "The id (name) of the primary domain",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The new profile to replace the existing one",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Profile"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Profile"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Specified profile not found"
+          }
+        },
+        "security" : [ {
+          "Bearer" : [ ]
+        } ]
+      }
+    },
+    "/{domainId}/{profileId}/offboard" : {
+      "post" : {
+        "tags" : [ "People" ],
+        "summary" : "Begins offboarding the specified user in the specified domain",
+        "description" : "",
+        "operationId" : "offboard",
+        "parameters" : [ {
+          "name" : "profileId",
+          "in" : "path",
+          "description" : "The id (email) of the profile for the user being offboarded",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "domainId",
+          "in" : "path",
+          "description" : "The id (name) of the primary domain",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Profile"
+            }
+          },
+          "400" : {
+            "description" : "Profile on hold or already being offboarded"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Specified profile not found"
+          }
+        },
+        "security" : [ {
+          "Bearer" : [ ]
+        } ]
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "Bearer" : {
+      "description" : "Use '<strong>Bearer</strong> <em>your_token</em>' as the value<br/><br/>",
+      "type" : "apiKey",
+      "name" : "Authorization",
+      "in" : "header"
+    }
+  },
+  "definitions" : {
+    "Location" : {
+      "type" : "object",
+      "properties" : {
+        "area" : {
+          "type" : "string"
+        },
+        "buildingId" : {
+          "type" : "string"
+        },
+        "deskCode" : {
+          "type" : "string"
+        },
+        "floorName" : {
+          "type" : "string"
+        },
+        "floorSection" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "customType" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Profile" : {
+      "type" : "object",
+      "required" : [ "familyName", "givenName", "id", "password" ],
+      "properties" : {
+        "hidden" : {
+          "type" : "boolean",
+          "description" : "Profile has been hidden",
+          "readOnly" : true,
+          "default" : false
+        },
+        "endDate" : {
+          "type" : "string",
+          "description" : "Employment End Date<br/><br/>Format: <em>YYYY-MM-DD</em>"
+        },
+        "id" : {
+          "type" : "string",
+          "description" : "ID (full email address)<br/><br/>Mandatory when creating a new profile."
+        },
+        "workflowId" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "onHold" : {
+          "type" : "boolean",
+          "description" : "Profile is on hold<br/><br/>Set to true on create/update to prevent offboarding.",
+          "default" : false
+        },
+        "tags" : {
+          "type" : "array",
+          "description" : "Tags",
+          "items" : {
+            "$ref" : "#/definitions/ProfileTag"
+          }
+        },
+        "predefinedTags" : {
+          "type" : "array",
+          "description" : "Tags (Predefined)",
+          "items" : {
+            "$ref" : "#/definitions/ProfileTag"
+          }
+        },
+        "extraInformation" : {
+          "type" : "array",
+          "description" : "Extra Information",
+          "items" : {
+            "$ref" : "#/definitions/ProfileExtraInformation"
+          }
+        },
+        "predefinedExtraInformation" : {
+          "type" : "array",
+          "description" : "Extra Information (Predefined)",
+          "items" : {
+            "$ref" : "#/definitions/ProfileExtraInformation"
+          }
+        },
+        "parentPath" : {
+          "type" : "string",
+          "description" : "Parent Path<br/><br/>Format: Separate OUs and Child OUs by a \"-\" and do not include the root OU. For users to be created in the root, leave this field blank. Example: OUA-ChildOUA"
+        },
+        "additionalName" : {
+          "type" : "string",
+          "description" : "Additional Name"
+        },
+        "birthday" : {
+          "type" : "string",
+          "description" : "Date of Birth<br/><br/>Format: <em>YYYY-MM-DD</em>"
+        },
+        "familyName" : {
+          "type" : "string",
+          "description" : "Last Name<br/><br/>Mandatory when creating a new profile."
+        },
+        "givenName" : {
+          "type" : "string",
+          "description" : "First Name<br/><br/>Mandatory when creating a new profile."
+        },
+        "namePrefix" : {
+          "type" : "string",
+          "description" : "Title",
+          "enum" : [ "mr", "mrs", "miss", "dr", "prof" ]
+        },
+        "nameSuffix" : {
+          "type" : "string",
+          "description" : "Name Suffix"
+        },
+        "nick" : {
+          "type" : "string",
+          "description" : "Nickname"
+        },
+        "sex" : {
+          "type" : "string",
+          "description" : "Gender",
+          "enum" : [ "Male", "Female" ]
+        },
+        "notes" : {
+          "type" : "string",
+          "description" : "Notes"
+        },
+        "maidenName" : {
+          "type" : "string",
+          "description" : "Maiden Name"
+        },
+        "shortName" : {
+          "type" : "string",
+          "description" : "Short Name"
+        },
+        "employeeId" : {
+          "type" : "string",
+          "description" : "Employee ID"
+        },
+        "preferredName" : {
+          "type" : "string",
+          "description" : "Preferred Name"
+        },
+        "subject" : {
+          "type" : "string",
+          "description" : "Subject"
+        },
+        "aliases" : {
+          "type" : "array",
+          "description" : "Email Aliases",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "occupation" : {
+          "type" : "string",
+          "description" : "Occupation"
+        },
+        "addresses" : {
+          "type" : "array",
+          "description" : "Postal Addresses",
+          "items" : {
+            "$ref" : "#/definitions/ProfileAttributeAddressType"
+          }
+        },
+        "phoneNumbers" : {
+          "type" : "array",
+          "description" : "Phone Numbers",
+          "items" : {
+            "$ref" : "#/definitions/ProfileAttributePhoneNumberType"
+          }
+        },
+        "webSites" : {
+          "type" : "array",
+          "description" : "Website Addresses",
+          "items" : {
+            "$ref" : "#/definitions/ProfileAttributeWebSiteType"
+          }
+        },
+        "emails" : {
+          "type" : "array",
+          "description" : "Email Addresses",
+          "items" : {
+            "$ref" : "#/definitions/ProfileAttributeEmailType"
+          }
+        },
+        "manager" : {
+          "type" : "string",
+          "description" : "Line Manager"
+        },
+        "assistants" : {
+          "type" : "array",
+          "description" : "Assistants",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "events" : {
+          "type" : "array",
+          "description" : "Events",
+          "items" : {
+            "$ref" : "#/definitions/ProfileAttributeEventType"
+          }
+        },
+        "imAddresses" : {
+          "type" : "array",
+          "description" : "Instant Messaging Addresses",
+          "items" : {
+            "$ref" : "#/definitions/ProfileAttributeImAddressType"
+          }
+        },
+        "locations" : {
+          "type" : "array",
+          "description" : "Office Locations",
+          "items" : {
+            "$ref" : "#/definitions/Location"
+          }
+        },
+        "department" : {
+          "type" : "string",
+          "description" : "Department"
+        },
+        "employmentType" : {
+          "type" : "string",
+          "description" : "Employment Type"
+        },
+        "jobDescription" : {
+          "type" : "string",
+          "description" : "Job Description"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Company Name"
+        },
+        "title" : {
+          "type" : "string",
+          "description" : "Job Title"
+        },
+        "costCentre" : {
+          "type" : "string",
+          "description" : "Cost Center"
+        },
+        "hireDate" : {
+          "type" : "string",
+          "description" : "Employment Start Date<br/><br/>Format: <em>YYYY-MM-DD</em>"
+        },
+        "password" : {
+          "type" : "string",
+          "description" : "Default Password<br/><br/>Mandatory when creating a new profile."
+        },
+        "provisionDate" : {
+          "type" : "string",
+          "description" : "User Provision Date<br/><br/>Format: <em>YYYY-MM-DD</em>"
+        }
+      }
+    },
+    "ProfileAttributeAddressType" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "enum" : [ "WORK", "HOME", "OTHER" ]
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "primary" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ProfileAttributeEmailType" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "enum" : [ "GENERAL", "WORK", "HOME", "OTHER" ]
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "primary" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ProfileAttributeEventType" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "enum" : [ "ANNIVERSARY", "OTHER" ]
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "primary" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ProfileAttributeImAddressType" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "enum" : [ "AIM", "GOOGLE_TALK", "ICQ", "JABBER", "MSN", "NETMEETING", "QQ", "SKYPE", "YAHOO" ]
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "primary" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ProfileAttributePhoneNumberType" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "enum" : [ "MOBILE", "HOME", "WORK", "WORK_MOBILE", "CALLBACK", "ASSISTANT", "COMPANY_MAIN", "FAX", "HOME_FAX", "WORK_FAX", "OTHER_FAX", "PAGER", "WORK_PAGER", "CAR", "RADIO", "TTY_TDD", "ISDN", "TELEX", "OTHER", "MAIN", "GRAND_CENTRAL" ]
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "primary" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ProfileAttributeWebSiteType" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "enum" : [ "BLOG", "FTP", "HOME", "HOME_PAGE", "OTHER", "PROFILE", "WORK" ]
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "primary" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ProfileExtraInformation" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "TEXT", "YES_NO", "DATE", "INT", "DECIMAL", "PHONE", "EMAIL" ]
+        }
+      }
+    },
+    "ProfileTag" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "fontColour" : {
+          "type" : "string"
+        },
+        "backColour" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}
