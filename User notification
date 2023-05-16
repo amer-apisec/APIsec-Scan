@@ -1,0 +1,1588 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "UserNotifications.Api",
+    "description": "User notifications API",
+    "version": "Version 1"
+  },
+  "paths": {
+    "/v1/app-notifications": {
+      "get": {
+        "tags": [
+          "AppNotifications"
+        ],
+        "parameters": [
+          {
+            "name": "packageId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          {
+            "name": "nativeVersion",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          {
+            "name": "productId",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "nullable": true
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAppNotificationsResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAppNotificationsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "AppNotifications"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostAppNotificationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostAppNotificationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostAppNotificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/v1/app-notification-types": {
+      "post": {
+        "tags": [
+          "AppNotificationTypes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppNotificationTypeRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppNotificationTypeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppNotificationTypeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/v1/notifications/allowed-types": {
+      "put": {
+        "tags": [
+          "Notifications"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetAllowedNotificationTypesRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetAllowedNotificationTypesRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetAllowedNotificationTypesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications/send": {
+      "put": {
+        "tags": [
+          "Notifications"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendNotificationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendNotificationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendNotificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendNotificationResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendNotificationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sms/validate-phone-number": {
+      "post": {
+        "tags": [
+          "Sms"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidatePhoneNumberModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidatePhoneNumberModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidatePhoneNumberModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneNumberCarrierValidationResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneNumberCarrierValidationResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sms/send": {
+      "post": {
+        "tags": [
+          "Sms"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Sms"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Sms"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Sms"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sms/callback": {
+      "post": {
+        "tags": [
+          "Sms"
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sms/status": {
+      "get": {
+        "tags": [
+          "Sms"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetSmsStatusRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetSmsStatusRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetSmsStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmsDeliveryStatus"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SmsDeliveryStatus"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user-preferences/email": {
+      "get": {
+        "tags": [
+          "UserPreferences"
+        ],
+        "parameters": [
+          {
+            "name": "product",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ProductTypes"
+              },
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferencesResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferencesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user-preferences/sms": {
+      "get": {
+        "tags": [
+          "UserPreferences"
+        ],
+        "parameters": [
+          {
+            "name": "product",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ProductTypes"
+              },
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferencesResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferencesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user-preferences/push-notification": {
+      "get": {
+        "tags": [
+          "UserPreferences"
+        ],
+        "parameters": [
+          {
+            "name": "product",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ProductTypes"
+              },
+              "nullable": true
+            }
+          },
+          {
+            "name": "packageId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferencesResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferencesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user-preferences": {
+      "post": {
+        "tags": [
+          "UserPreferences"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPreferencesRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPreferencesRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPreferencesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/v1/validation/validate-phone-number": {
+      "post": {
+        "tags": [
+          "Validation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidatePhoneNumberRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidatePhoneNumberRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidatePhoneNumberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneNumberCarrierValidationResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneNumberCarrierValidationResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/validation/validate-email-address": {
+      "post": {
+        "tags": [
+          "Validation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateEmailRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateEmailRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateEmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidateEmailResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidateEmailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "AppNotificationsModel": {
+        "type": "object",
+        "properties": {
+          "viewed": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "isUserDismissible": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "notificationType": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "productType": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "productId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetAppNotificationsResponse": {
+        "type": "object",
+        "properties": {
+          "appNotifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppNotificationsModel"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AppNotificationModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "viewed": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "dismissed": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PostAppNotificationRequest": {
+        "type": "object",
+        "properties": {
+          "appNotifications": {
+            "minLength": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppNotificationModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NotificationType": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataSchemaAndVersion": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SupportedNotifications": {
+        "type": "object",
+        "properties": {
+          "pushNotificationTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationType"
+            },
+            "nullable": true
+          },
+          "appNotificationTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationType"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AppNotificationTypeRequest": {
+        "required": [
+          "jsVersion",
+          "nativeVersion",
+          "packageId"
+        ],
+        "type": "object",
+        "properties": {
+          "nativeVersion": {
+            "type": "string"
+          },
+          "jsVersion": {
+            "type": "string"
+          },
+          "packageId": {
+            "type": "string"
+          },
+          "supportedNotifications": {
+            "$ref": "#/components/schemas/SupportedNotifications"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProductTypes": {
+        "enum": [
+          "LOC",
+          "SBL",
+          "ProspaPay",
+          "Partner",
+          "None",
+          "BusinessAccount"
+        ],
+        "type": "string"
+      },
+      "NotificationMedium": {
+        "enum": [
+          "Email",
+          "Sms",
+          "PushNotification"
+        ],
+        "type": "string"
+      },
+      "AllowedNotificationTypeModel": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "$ref": "#/components/schemas/ProductTypes"
+          },
+          "notificationDisplayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "notificationType": {
+            "type": "string",
+            "nullable": true
+          },
+          "enabledByDefault": {
+            "type": "boolean"
+          },
+          "notificationMedium": {
+            "$ref": "#/components/schemas/NotificationMedium"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SetAllowedNotificationTypesRequest": {
+        "type": "object",
+        "properties": {
+          "allowedNotificationTypes": {
+            "minLength": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AllowedNotificationTypeModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmailAddressModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmailAttachment": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "filename": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Email": {
+        "type": "object",
+        "properties": {
+          "tos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmailAddressModel"
+            },
+            "nullable": true
+          },
+          "from": {
+            "$ref": "#/components/schemas/EmailAddressModel"
+          },
+          "bccs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmailAddressModel"
+            },
+            "nullable": true
+          },
+          "subject": {
+            "type": "string",
+            "nullable": true
+          },
+          "htmlContent": {
+            "type": "string",
+            "nullable": true
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmailAttachment"
+            },
+            "nullable": true
+          },
+          "replyTo": {
+            "$ref": "#/components/schemas/EmailAddressModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Sms": {
+        "required": [
+          "message",
+          "number"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InAppNotification": {
+        "type": "object",
+        "properties": {
+          "isUserDismissable": {
+            "type": "boolean"
+          },
+          "expirationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PushNotificationPayload": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "requireAppVersionSupport": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SendNotificationRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "notificationType": {
+            "type": "string",
+            "nullable": true
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "product": {
+            "type": "string",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            },
+            "nullable": true
+          },
+          "email": {
+            "$ref": "#/components/schemas/Email"
+          },
+          "sms": {
+            "$ref": "#/components/schemas/Sms"
+          },
+          "inAppNotification": {
+            "$ref": "#/components/schemas/InAppNotification"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "pushNotification": {
+            "$ref": "#/components/schemas/PushNotificationPayload"
+          },
+          "overrideUserPreference": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SendNotificationResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidatePhoneNumberModel": {
+        "required": [
+          "phoneNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhoneNumberType": {
+        "enum": [
+          "Landline",
+          "Mobile",
+          "Voip"
+        ],
+        "type": "string"
+      },
+      "PhoneNumberCarrierValidationResult": {
+        "type": "object",
+        "properties": {
+          "phoneNumberValid": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "phoneNumberType": {
+            "$ref": "#/components/schemas/PhoneNumberType"
+          },
+          "nationalFormat": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "carrier": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetSmsStatusRequest": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "messageId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SmsDeliveryStatus": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "sid": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sentDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deliveryDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "clientId": {
+            "type": "string",
+            "nullable": true
+          },
+          "eventData": {
+            "type": "string",
+            "nullable": true
+          },
+          "partitionKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "rowKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "eTag": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserPreference": {
+        "type": "object",
+        "properties": {
+          "notificationType": {
+            "type": "string",
+            "nullable": true
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductTypes"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "notificationMedium": {
+            "$ref": "#/components/schemas/NotificationMedium"
+          },
+          "displayNotificationType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserPreferencesResponse": {
+        "type": "object",
+        "properties": {
+          "preferences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserPreference"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserPreferenceModel": {
+        "required": [
+          "notificationMedium",
+          "product"
+        ],
+        "type": "object",
+        "properties": {
+          "notificationType": {
+            "type": "string",
+            "nullable": true
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductTypes"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "notificationMedium": {
+            "$ref": "#/components/schemas/NotificationMedium"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserPreferencesRequest": {
+        "type": "object",
+        "properties": {
+          "preferences": {
+            "minLength": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserPreferenceModel"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidatePhoneNumberRequest": {
+        "required": [
+          "phoneNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidateEmailRequest": {
+        "required": [
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VerdictType": {
+        "enum": [
+          "Valid",
+          "Risky",
+          "Invalid"
+        ],
+        "type": "string"
+      },
+      "Domain": {
+        "type": "object",
+        "properties": {
+          "has_valid_address_syntax": {
+            "type": "boolean"
+          },
+          "has_mx_or_a_record": {
+            "type": "boolean"
+          },
+          "is_suspected_disposable_address": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Local_part": {
+        "type": "object",
+        "properties": {
+          "is_suspected_role_address": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Additional": {
+        "type": "object",
+        "properties": {
+          "has_known_bounces": {
+            "type": "boolean"
+          },
+          "has_suspected_bounces": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Checks": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "$ref": "#/components/schemas/Domain"
+          },
+          "local_part": {
+            "$ref": "#/components/schemas/Local_part"
+          },
+          "additional": {
+            "$ref": "#/components/schemas/Additional"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ValidateEmailResponse": {
+        "type": "object",
+        "properties": {
+          "verdict": {
+            "$ref": "#/components/schemas/VerdictType"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "score": {
+            "type": "string",
+            "nullable": true
+          },
+          "local": {
+            "type": "string",
+            "nullable": true
+          },
+          "host": {
+            "type": "string",
+            "nullable": true
+          },
+          "suggestion": {
+            "type": "string",
+            "nullable": true
+          },
+          "source": {
+            "type": "string",
+            "nullable": true
+          },
+          "checks": {
+            "$ref": "#/components/schemas/Checks"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
