@@ -1,0 +1,275 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "beta",
+    "title" : "Banking Rules API",
+    "contact" : {
+      "name" : ""
+    },
+    "license" : {
+      "name" : "",
+      "url" : "http://licenseUrl"
+    }
+  },
+  "host" : "fury.banking-rules.dev.myob.com",
+  "basePath" : "/",
+  "tags" : [ {
+    "name" : "Banking Rules API"
+  } ],
+  "paths" : {
+    "/api/apply-rules" : {
+      "post" : {
+        "tags" : [ "Banking Rules API" ],
+        "summary" : "Apply rule",
+        "description" : "",
+        "operationId" : "applyRule",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Payload",
+          "description" : "Apply rule payload in JSON",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "IDAM token",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Apply rule has successfully completed."
+          },
+          "400" : {
+            "description" : "Invalid payload."
+          },
+          "401" : {
+            "description" : "IDAM authentication failed"
+          },
+          "500" : {
+            "description" : "Underlying service error, e.g. DynamoDB exceptions."
+          }
+        }
+      }
+    },
+    "/api/businesses/{businessSerialNumber}/rules" : {
+      "get" : {
+        "tags" : [ "Banking Rules API" ],
+        "summary" : "Get rules",
+        "description" : "",
+        "operationId" : "listRules",
+        "parameters" : [ {
+          "name" : "businessSerialNumber",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "IDAM token",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Rules has been fetched, or empty list of no rules have been found."
+          },
+          "401" : {
+            "description" : "IDAM authentication failed"
+          },
+          "500" : {
+            "description" : "Underlying service error, e.g. DynamoDB exceptions."
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Banking Rules API" ],
+        "summary" : "Create rule",
+        "description" : "",
+        "operationId" : "createRule",
+        "parameters" : [ {
+          "name" : "businessSerialNumber",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "Payload",
+          "description" : "Rule payload in JSON",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "IDAM token",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ActionJsValue"
+            }
+          },
+          "201" : {
+            "description" : "Rule has been successfully created."
+          },
+          "400" : {
+            "description" : "Invalid payload."
+          },
+          "401" : {
+            "description" : "IDAM authentication failed"
+          },
+          "500" : {
+            "description" : "Underlying service error, e.g. DynamoDB exceptions."
+          }
+        }
+      }
+    },
+    "/api/businesses/{businessSerialNumber}/rules/{ruleId}" : {
+      "get" : {
+        "tags" : [ "Banking Rules API" ],
+        "summary" : "Get rule",
+        "description" : "",
+        "operationId" : "getRule",
+        "parameters" : [ {
+          "name" : "businessSerialNumber",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "ruleId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "IDAM token",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Rule has been fetched."
+          },
+          "401" : {
+            "description" : "IDAM authentication failed"
+          },
+          "500" : {
+            "description" : "Underlying service error, e.g. DynamoDB exceptions."
+          },
+          "404" : {
+            "description" : "Rule could not be found."
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Banking Rules API" ],
+        "summary" : "Update rule",
+        "description" : "",
+        "operationId" : "updateRule",
+        "parameters" : [ {
+          "name" : "businessSerialNumber",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "ruleId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "Payload",
+          "description" : "Rule payload in JSON",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "IDAM token",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Rule has been successfully updated."
+          },
+          "400" : {
+            "description" : "Invalid payload."
+          },
+          "401" : {
+            "description" : "IDAM authentication failed"
+          },
+          "500" : {
+            "description" : "Underlying service error, e.g. DynamoDB exceptions."
+          },
+          "404" : {
+            "description" : "Rule could not be found."
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Banking Rules API" ],
+        "summary" : "Delete rule",
+        "description" : "",
+        "operationId" : "deleteRule",
+        "parameters" : [ {
+          "name" : "businessSerialNumber",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "ruleId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "Payload",
+          "description" : "Rule payload in JSON",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "description" : "IDAM token",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Rule has been successfully deleted."
+          },
+          "401" : {
+            "description" : "IDAM authentication failed"
+          },
+          "500" : {
+            "description" : "Underlying service error, e.g. DynamoDB exceptions."
+          },
+          "404" : {
+            "description" : "Rule could not be found."
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "ActionAnyContent" : {
+      "type" : "object"
+    },
+    "ActionJsValue" : {
+      "type" : "object"
+    }
+  }
+}
