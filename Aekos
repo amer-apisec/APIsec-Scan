@@ -1,0 +1,3452 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "The AEKOS API is used for machine readable HTTP (REST) access to AEKOS ecological data.\n\n# High level workflow\n1. Start with a trait or species\n1. Find what species have that trait or what traits/environmental variables are available for that species\n1. Use your traits/species/environmental variables to retrieve the data with the retrieval services\n\n# Detailed workflow\nFirstly, start with the search services. You should either find a species with `speciesAutocomplete`\nor find a trait with `getTraitVocab`. Then, for traits, find the species with that trait with\n`getSpeciesByTrait`. For species, you can find what traits or environmental variables are available with\n`getEnvironmentBySpecies` or `getTraitsBySpecies`.\nNow you can retrieve the data. You can get Darwin Core species records (using species names), Darwin Core +\ntraits (using species names and optionally filtering by trait names) or environmental variable records\n(using species names and optionally filtering by environmental variable names).\n\n# A note about species names\nWe have used Darwin Core terms (version 2015-06-02) as field names for the result of the data retrieval resources.\nThere are two fields that are relevant to species names: `scientificName` and `taxonRemarks`. The former is, as the name\nsuggests, for scientific species names and the latter is for records that have a common species name or a\ncommentary about the organism e.g.: \"Grass\", \"Absent\" or \"Clover\". See http://rs.tdwg.org/dwc/terms/index.htm#scientificName\nand http://rs.tdwg.org/dwc/terms/index.htm#taxonRemarks for more information.\n\n# A note about performance/response times\nThis API is running on AWS Lambda and API Gateway. Lambda handler functions will go to sleep\nwhen they haven't been called for some time (something around 5-10 minutes seems to be the consensus). When the\nresource is warm (it has recently been called) it will respond instantly. However, when it's cold (gone\nto sleep) it will have to start up before it can respond so the total response time could be up to 10 seconds. **All endpoints for this API go through the same handler so calling any endpoint will pre-heat the whole API**.\n\nTo build a UI (typically calls are time sensitive) on top of this API, you can \"pre-heat\" the whole API as the page loads. A workflow like:\n1. user loads page\n1. as page loads, call the `/api` resource\n1. user spends a few seconds filling out form on page\n1. user submits request\n1. AEKOS API responds quickly because the resource is already warmed up\n\nObviously if you can pre-empt needing to call this API by at least 10 seconds and call the `/api/` resource at that time, you can ensure that you'll get the best performance.\n\n# CORS support\nAll resources are CORS-enabled for any origin. In the interest of keeping this documentation clean, the `OPTIONS` methods have been omitted.\n",
+    "version": "v2",
+    "title": "AEKOS REST API",
+    "termsOfService": "http://www.ecoinformatics.org.au/licensing_and_attributions",
+    "contact": {
+      "name": "TERN Ecoinformatics",
+      "url": "http://www.ecoinformatics.org.au",
+      "email": "api@aekos.org.au"
+    },
+    "license": {
+      "name": "Licensing and attributions",
+      "url": "http://www.ecoinformatics.org.au/licensing_and_attributions"
+    }
+  },
+  "host": "api.aekos.org.au",
+  "tags": [
+    {
+      "name": "Data Retrieval by Species",
+      "description": "Retrieve data using parameters from search"
+    },
+    {
+      "name": "Data Retrieval (everything)",
+      "description": "Retrieve all records"
+    },
+    {
+      "name": "Search",
+      "description": "Find species, traits and environmental variables"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/api": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Get API HATEOAS links",
+        "description": "Provides links for actions that can be taken. As a RESTful (HATEOAS) client, this is your starting point.\n",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/sampling-protocol-summary": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Get summary of the sampling protocol values in the system",
+        "description": "The response gives 3 levels. The 'datasetGroups' summarises the samplingProtocol values at the highest level. Then 'samplingProtocolGroups' summarises at the next level down and for some surveys, this is the lowest level available. Finally, the 'surveys' is a list of all surveys (also samplingProtocol values) in the system. You can use this list to build client-side filters for other responses. For example, if you didn't want any OEH records, you could find the common samplingProtocol prefix for all the OEH surveys and then discard records you recieve that match that prefix. See <a href=\"/sampling-protocol-summary.html\" target=\"_blank\">this page</a> for more details.\n",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/SamplingProtocolSummaryResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/allSpeciesData": {
+      "get": {
+        "tags": [
+          "Data Retrieval (everything)"
+        ],
+        "summary": "Get all species data",
+        "description": "Gets all Darwin Core records using content negotation to determine the response type. This resource honours Accept headers represented by any of the /v1/allSpeciesData.* resources.\n",
+        "produces": [
+          "application/json",
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1AllSpeciesDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/allSpeciesData.csv": {
+      "get": {
+        "tags": [
+          "Data Retrieval (everything)"
+        ],
+        "summary": "Get all species occurrence data in CSV format",
+        "description": "Gets all Darwin Core records in CSV format.\n",
+        "produces": [
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "true to trigger a browser download of the result, default=false",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/CsvResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/allSpeciesData.json": {
+      "get": {
+        "tags": [
+          "Data Retrieval (everything)"
+        ],
+        "summary": "Get all species data in JSON format",
+        "description": "Gets Darwin Core records in JSON format.\n",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1AllSpeciesDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/environmentData": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get environmental variable data",
+        "description": "Gets environmental variable data records for the site/study location/plot visits that the supplied species name(s) appear at using content negotation to determine the response type. If you supply environmental variable names then the result will have the environmental variables filtered down to only the environmental variables you've asked for, otherwise all environmental variables are returned. Note: not all sites have environmental variables available. This resource honours Accept headers represented by any of the /v1/environmentData.* resources.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json",
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1EnvDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1EnvDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1EnvDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/environmentData.csv": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get environmental variable data in CSV format",
+        "description": "Gets environmental variable data records for the site/study location/plot visits that the supplied species name(s) appear at in CSV format. If you supply environmental variable names then the result will have the environmental variables filtered down to only the environmental variables you've asked for, otherwise all environmental variables are returned. Note: not all sites have environmental variables available.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "true to trigger a browser download of the result, default=false",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "in": "body",
+            "name": "V1EnvDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1EnvDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/CsvResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/environmentData.json": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get environmental variable data in JSON format",
+        "description": "Gets environmental variable data records for the site/study location/plot visits that the supplied species name(s) appear at in JSON format. If you supply environmental variable names then the result will have the environmental variables filtered down to only the environmental variables you've asked for, otherwise all environmental variables are returned. Note: not all sites have environmental variables available.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1EnvDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1EnvDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1EnvDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/getEnvironmentBySpecies.json": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Retrieve all available environment variable names for specified species",
+        "description": "Finds the environmental variables that the supplied species have. Note that the result doesn't include the value of the environmental variables, it only shows that the supplied species have values for those variables. To get the values, you need to use the Data Retrieval resources.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= pageSize &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "pageNum",
+            "in": "query",
+            "description": "1-indexed page number, default=1",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1GetEnvironmentBySpeciesRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1GetEnvironmentBySpeciesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1EnvironmentBySpeciesResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/getEnvironmentalVariableVocab.json": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Get environmental variable vocabulary",
+        "description": "Gets a distinct list of all the environmental variables that appear in the system. The code and label are supplied for each trait. The codes are required to use as parameters for other resources and the label information is useful for creating UIs.\n",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1EnvironmentalVariableVocabResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/getSpeciesByTrait.json": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Retrieve all available species for specified traits",
+        "description": "Finds the species names that the supplied trait(s). Note that the result only shows that the supplied traits have species records present in the system. To get the values of the traits, you need to use the Data Retrieval resources.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= pageSize &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "pageNum",
+            "in": "query",
+            "description": "1-indexed page number, default=1",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1SpeciesByTraitRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesByTraitRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesByTraitResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/getTraitVocab.json": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Get trait vocabulary",
+        "description": "Gets a distinct list of all the traits that appear in the system. The code and label are supplied for each trait. The codes are required to use as parameters for other resources and the label information is useful for creating UIs.\n",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1TraitVocabResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/getTraitsBySpecies.json": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Retrieve all available traits for specified species",
+        "description": "Finds the traits that the supplied species have. Note that the result doesn't include the value of the traits, it only shows that the supplied species have values for those traits. To get the values, you need to use the Data Retrieval resources.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= pageSize &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "pageNum",
+            "in": "query",
+            "description": "1-indexed page number, default=1",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1TraitBySpeciesRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1TraitBySpeciesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1TraitBySpeciesResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/speciesAutocomplete.json": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Autocomplete partial species names",
+        "description": "Performs an autocomplete on the partial species name supplied. Results starting with the supplied fragment will be returned ordered by most relevant.\n",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "partial species name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesAutocompleteResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/speciesData": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get species data",
+        "description": "Gets Darwin Core records for the supplied species name(s) using content negotation to determine the response type. This resource honours Accept headers represented by any of the /v1/speciesData.* resources.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json",
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1SpeciesDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/speciesData.csv": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get species data in CSV format",
+        "description": "Gets Darwin Core records for the supplied species name(s) in CSV format.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "true to trigger a browser download of the result, default=false",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "in": "body",
+            "name": "V1SpeciesDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/CsvResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/speciesData.json": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get species data in JSON format",
+        "description": "Gets Darwin Core records for the supplied species name(s) in JSON format.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1SpeciesDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/speciesSummary.json": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Get a summary of the specified species names",
+        "description": "A summary of the information that the system holds on the supplied species name(s) including a count of records. If the system doesn't have any data on a species name, no record for the species name will be in the result.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "V1SpeciesSummaryRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesSummaryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesSummaryResponse"
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/traitData": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get trait data",
+        "description": "Gets Darwin Core records with added trait information for the supplied species name(s) using content negotation to determine the response type. If you supply trait names then the result records will have the traits filtered down to only the traits you've asked for, otherwise all traits are returned. This resource differs from 'speciesData*' in that it will potentially return fewer records. 'speciesData*' will return all species records whereas this resource will only return records that have either a) any traits, if no trait filter is applied, or b) the specified traits if a filter is applied. You'll never get records with no traits from this resource.\n This resource honours Accept headers represented by any of the /v1/traitData.* resources.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json",
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1TraitDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1TraitDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1TraitDataJsonResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/traitData.csv": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get trait data in CSV format",
+        "description": "Gets Darwin Core records with added trait information in CSV format. If you supply trait names then the result records will have the traits filtered down to only the traits you've asked for, otherwise all traits are returned. This resource differs from 'speciesData*' in that it will potentially return fewer records. 'speciesData*' will return all species records whereas this resource will only return records that have either a) any traits, if no trait filter is applied, or b) the specified traits if a filter is applied. You'll never get records with no traits from this resource.\n\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "true to trigger a browser download of the result, default=false",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "in": "body",
+            "name": "V1TraitDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1TraitDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/CsvResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v1/traitData.json": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get trait data in JSON format",
+        "description": "Gets Darwin Core records with added trait information in JSON format. If you supply trait names then the result records will have the traits filtered down to only the traits you've asked for, otherwise all traits are returned. This resource differs from 'speciesData*' in that it will potentially return fewer records. 'speciesData*' will return all species records whereas this resource will only return records that have either a) any traits, if no trait filter is applied, or b) the specified traits if a filter is applied. You'll never get records with no traits from this resource.\n\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1TraitDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1TraitDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1TraitDataJsonResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/v2/allSpeciesData": {
+      "get": {
+        "tags": [
+          "Data Retrieval (everything)"
+        ],
+        "summary": "Get all species data",
+        "description": "Gets all Darwin Core records using content negotation to determine the response type. This resource honours Accept headers represented by any of the /v2/allSpeciesData.* resources. Version 2 adds two new fields to each record; 'locationName' and 'datasetName'.\n",
+        "produces": [
+          "application/json",
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2AllSpeciesDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/allSpeciesData.csv": {
+      "get": {
+        "tags": [
+          "Data Retrieval (everything)"
+        ],
+        "summary": "Get all species occurrence data in CSV format",
+        "description": "Gets all Darwin Core records in CSV format. Version 2 adds two new fields to each record; 'locationName' and 'datasetName'.\n",
+        "produces": [
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "true to trigger a browser download of the result, default=false",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/CsvResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/allSpeciesData.json": {
+      "get": {
+        "tags": [
+          "Data Retrieval (everything)"
+        ],
+        "summary": "Get all species data in JSON format",
+        "description": "Gets Darwin Core records in JSON format. Version 2 adds two new fields to each record; 'locationName' and 'datasetName'.\n",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2AllSpeciesDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/environmentData": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get environmental variable data",
+        "description": "Gets environmental variable data records for the site/study location/plot visits that the supplied species name(s) appear at using content negotation to determine the response type. If you supply environmental variable names then the result will have the environmental variables filtered down to only the environmental variables you've asked for, otherwise all environmental variables are returned. Note: not all sites have environmental variables available. This resource honours Accept headers represented by any of the /v2/environmentData.* resources. Version 2 adds two new fields to each record; 'locationName' and 'datasetName'.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json",
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1EnvDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1EnvDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2EnvDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/environmentData.csv": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get environmental variable data in CSV format",
+        "description": "Gets environmental variable data records for the site/study location/plot visits that the supplied species name(s) appear at in CSV format. If you supply environmental variable names then the result will have the environmental variables filtered down to only the environmental variables you've asked for, otherwise all environmental variables are returned. Note: not all sites have environmental variables available. Version 2 adds two new fields to each record; 'locationName' and 'datasetName'.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "true to trigger a browser download of the result, default=false",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "in": "body",
+            "name": "V1EnvDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1EnvDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/CsvResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/environmentData.json": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get environmental variable data in JSON format",
+        "description": "Gets environmental variable data records for the site/study location/plot visits that the supplied species name(s) appear at in JSON format. If you supply environmental variable names then the result will have the environmental variables filtered down to only the environmental variables you've asked for, otherwise all environmental variables are returned. Note: not all sites have environmental variables available. Version 2 adds two new fields to each record; 'locationName' and 'datasetName'.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1EnvDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1EnvDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2EnvDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/getEnvironmentBySpecies.json": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Retrieve all available environment variable names for specified species",
+        "description": "Finds the environmental variables that the supplied species have. Note that the result doesn't include the value of the environmental variables, it only shows that the supplied species have values for those variables. To get the values, you need to use the Data Retrieval resources. No changes since version 1, just keeping version numbers synchronised.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= pageSize &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "pageNum",
+            "in": "query",
+            "description": "1-indexed page number, default=1",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V2EnvironmentBySpeciesRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V2EnvironmentBySpeciesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2EnvironmentBySpeciesResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/getEnvironmentalVariableVocab.json": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Get environmental variable vocabulary",
+        "description": "Gets a distinct list of all the environmental variables that appear in the system. The code and label are supplied for each trait. The codes are required to use as parameters for other resources and the label information is useful for creating UIs. No changes since version 1, just keeping version numbers synchronised.\n",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1EnvironmentalVariableVocabResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/getSpeciesByTrait.json": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Retrieve all available species for specified traits",
+        "description": "Finds the species names that the supplied trait(s). Note that the result only shows that the supplied traits have species records present in the system. To get the values of the traits, you need to use the Data Retrieval resources. Changes since version 1: the 'id' field is no longer included in the response.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= pageSize &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "pageNum",
+            "in": "query",
+            "description": "1-indexed page number, default=1",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V2SpeciesByTraitRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V2SpeciesByTraitRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2SpeciesByTraitResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/getTraitVocab.json": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Get trait vocabulary",
+        "description": "Gets a distinct list of all the traits that appear in the system. The code and label are supplied for each trait. The codes are required to use as parameters for other resources and the label information is useful for creating UIs. No changes since version 1, just keeping version numbers synchronised.\n",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V1TraitVocabResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/getTraitsBySpecies.json": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Retrieve all available traits for specified species",
+        "description": "Finds the traits that the supplied species have. Note that the result doesn't include the value of the traits, it only shows that the supplied species have values for those traits. To get the values, you need to use the Data Retrieval resources. No changes since version 1, just keeping version numbers synchronised.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= pageSize &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "pageNum",
+            "in": "query",
+            "description": "1-indexed page number, default=1",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V2TraitBySpeciesRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V2TraitBySpeciesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2TraitBySpeciesResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/speciesAutocomplete.json": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Autocomplete partial species names",
+        "description": "Performs an autocomplete on the partial species name supplied. Results starting with the supplied fragment will be returned ordered by most relevant. Changes since version 1: the 'id' field is no longer included in the response.\n",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "partial species name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2SpeciesAutocompleteResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/speciesData": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get species data",
+        "description": "Gets Darwin Core records for the supplied species name(s) using content negotation to determine the response type. This resource honours Accept headers represented by any of the /v2/speciesData.* resources. Version 2 adds two new fields to each record; 'locationName' and 'datasetName'.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json",
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1SpeciesDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2SpeciesDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/speciesData.csv": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get species data in CSV format",
+        "description": "Gets Darwin Core records for the supplied species name(s) in CSV format.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "true to trigger a browser download of the result, default=false",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "in": "body",
+            "name": "V1SpeciesDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/CsvResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/speciesData.json": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get species data in JSON format",
+        "description": "Gets Darwin Core records for the supplied species name(s) in JSON format. Version 2 adds two new fields to each record; 'locationName' and 'datasetName'.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1SpeciesDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1SpeciesDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2SpeciesDataResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/speciesSummary.json": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Get a summary of the specified species names",
+        "description": "A summary of the information that the system holds on the supplied species name(s) including a count of records. If the system doesn't have any data on a species name, no record for the species name will be in the result. Changes since version 1: the 'id' field is no longer included in the response.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "V2SpeciesSummaryRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V2SpeciesSummaryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2SpeciesSummaryResponse"
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/traitData": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get trait data",
+        "description": "Gets Darwin Core records with added trait information for the supplied species name(s) using content negotation to determine the response type. If you supply trait names then the result records will have the traits filtered down to only the traits you've asked for, otherwise all traits are returned. This resource differs from 'speciesData*' in that it will potentially return fewer records. 'speciesData*' will return all species records whereas this resource will only return records that have either a) any traits, if no trait filter is applied, or b) the specified traits if a filter is applied. You'll never get records with no traits from this resource.\n This resource honours Accept headers represented by any of the /v2/traitData.* resources. Version 2 adds two new fields to each record; 'locationName' and 'datasetName'.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json",
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1TraitDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1TraitDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2TraitDataJsonResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/traitData.csv": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get trait data in CSV format",
+        "description": "Gets Darwin Core records with added trait information in CSV format. If you supply trait names then the result records will have the traits filtered down to only the traits you've asked for, otherwise all traits are returned. This resource differs from 'speciesData*' in that it will potentially return fewer records. 'speciesData*' will return all species records whereas this resource will only return records that have either a) any traits, if no trait filter is applied, or b) the specified traits if a filter is applied. You'll never get records with no traits from this resource.\n Version 2 adds two new fields to each record; 'locationName' and 'datasetName'.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/csv"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "description": "true to trigger a browser download of the result, default=false",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "in": "body",
+            "name": "V1TraitDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1TraitDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/CsvResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v2/traitData.json": {
+      "post": {
+        "tags": [
+          "Data Retrieval by Species"
+        ],
+        "summary": "Get trait data in JSON format",
+        "description": "Gets Darwin Core records with added trait information in JSON format. If you supply trait names then the result records will have the traits filtered down to only the traits you've asked for, otherwise all traits are returned. This resource differs from 'speciesData*' in that it will potentially return fewer records. 'speciesData*' will return all species records whereas this resource will only return records that have either a) any traits, if no trait filter is applied, or b) the specified traits if a filter is applied. You'll never get records with no traits from this resource.\n Version 2 adds two new fields to each record; 'locationName' and 'datasetName'.\n",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "0-indexed result start index, default=0",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "records per page, default=20, must be 1 &lt;= rows &lt;= 1000\n",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "V1TraitDataRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/V1TraitDataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "schema": {
+              "$ref": "#/definitions/V2TraitDataJsonResponse"
+            },
+            "headers": {
+              "link": {
+                "type": "string",
+                "description": "describes other actions that can be taken"
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "schema": {
+              "$ref": "#/definitions/400JsonResponse"
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "schema": {
+              "$ref": "#/definitions/500JsonResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "V1SpeciesDataRequest": {
+      "type": "object",
+      "properties": {
+        "speciesNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "400JsonResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "statusCode": {
+          "type": "number"
+        }
+      }
+    },
+    "V2SpeciesSummaryRequest": {
+      "type": "object",
+      "properties": {
+        "speciesNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "V1TraitVocabResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "recordsHeld": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "code",
+          "label",
+          "recordsHeld"
+        ]
+      }
+    },
+    "V2SpeciesByTraitResponse": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "recordsHeld": {
+          "type": "number"
+        }
+      }
+    },
+    "ApiResponse": {
+      "type": "object",
+      "properties": {
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "rel": {
+                "type": "string"
+              },
+              "href": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "V2TraitDataJsonResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "locationName": {
+                "type": "string"
+              },
+              "traits": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "traitName": {
+                      "type": "string"
+                    },
+                    "traitUnit": {
+                      "type": "string"
+                    },
+                    "traitValue": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "year": {
+                "type": "number"
+              },
+              "scientificName": {
+                "type": "string"
+              },
+              "individualCount": {
+                "type": "number"
+              },
+              "datasetName": {
+                "type": "string"
+              },
+              "decimalLongitude": {
+                "type": "number"
+              },
+              "decimalLatitude": {
+                "type": "number"
+              },
+              "geodeticDatum": {
+                "type": "string"
+              },
+              "taxonRemarks": {
+                "type": "string"
+              },
+              "month": {
+                "type": "number"
+              },
+              "locationID": {
+                "type": "string"
+              },
+              "samplingProtocol": {
+                "type": "string"
+              },
+              "bibliographicCitation": {
+                "type": "string"
+              },
+              "eventDate": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responseHeader": {
+          "type": "object",
+          "properties": {
+            "pageNumber": {
+              "type": "number"
+            },
+            "numFound": {
+              "type": "number"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "traitName": {
+                  "type": "string"
+                },
+                "speciesName": {
+                  "type": "string"
+                },
+                "start": {
+                  "type": "number"
+                },
+                "rows": {
+                  "type": "number"
+                }
+              }
+            },
+            "elapsedTime": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "Empty": {
+      "type": "object",
+      "title": "Empty Schema"
+    },
+    "V1EnvDataResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "variables": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "varName": {
+                      "type": "string"
+                    },
+                    "varValue": {
+                      "type": "string"
+                    },
+                    "varUnit": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "month": {
+                "type": "number"
+              },
+              "year": {
+                "type": "number"
+              },
+              "locationID": {
+                "type": "string"
+              },
+              "decimalLongitude": {
+                "type": "number"
+              },
+              "samplingProtocol": {
+                "type": "string"
+              },
+              "decimalLatitude": {
+                "type": "number"
+              },
+              "geodeticDatum": {
+                "type": "string"
+              },
+              "bibliographicCitation": {
+                "type": "string"
+              },
+              "eventDate": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responseHeader": {
+          "type": "object",
+          "properties": {
+            "pageNumber": {
+              "type": "number"
+            },
+            "numFound": {
+              "type": "number"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "varName": {
+                  "type": "string"
+                },
+                "speciesName": {
+                  "type": "string"
+                },
+                "start": {
+                  "type": "number"
+                },
+                "rows": {
+                  "type": "number"
+                }
+              }
+            },
+            "elapsedTime": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "V2TraitBySpeciesRequest": {
+      "type": "object",
+      "properties": {
+        "speciesNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "V1SpeciesDataResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "month": {
+                "type": "number"
+              },
+              "year": {
+                "type": "number"
+              },
+              "scientificName": {
+                "type": "string"
+              },
+              "locationID": {
+                "type": "string"
+              },
+              "individualCount": {
+                "type": "number"
+              },
+              "decimalLongitude": {
+                "type": "number"
+              },
+              "samplingProtocol": {
+                "type": "string"
+              },
+              "decimalLatitude": {
+                "type": "number"
+              },
+              "geodeticDatum": {
+                "type": "string"
+              },
+              "bibliographicCitation": {
+                "type": "string"
+              },
+              "taxonRemarks": {
+                "type": "string"
+              },
+              "eventDate": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responseHeader": {
+          "type": "object",
+          "properties": {
+            "pageNumber": {
+              "type": "number"
+            },
+            "numFound": {
+              "type": "number"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "speciesName": {
+                  "type": "string"
+                },
+                "start": {
+                  "type": "number"
+                },
+                "rows": {
+                  "type": "number"
+                }
+              }
+            },
+            "elapsedTime": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "V1GetEnvironmentBySpeciesRequest": {
+      "type": "object",
+      "properties": {
+        "speciesNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "V2EnvDataResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "variables": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "varName": {
+                      "type": "string"
+                    },
+                    "varValue": {
+                      "type": "string"
+                    },
+                    "varUnit": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "locationName": {
+                "type": "string"
+              },
+              "month": {
+                "type": "number"
+              },
+              "year": {
+                "type": "number"
+              },
+              "locationID": {
+                "type": "string"
+              },
+              "datasetName": {
+                "type": "string"
+              },
+              "decimalLongitude": {
+                "type": "number"
+              },
+              "samplingProtocol": {
+                "type": "string"
+              },
+              "decimalLatitude": {
+                "type": "number"
+              },
+              "geodeticDatum": {
+                "type": "string"
+              },
+              "bibliographicCitation": {
+                "type": "string"
+              },
+              "eventDate": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responseHeader": {
+          "type": "object",
+          "properties": {
+            "pageNumber": {
+              "type": "number"
+            },
+            "numFound": {
+              "type": "number"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "varName": {
+                  "type": "string"
+                },
+                "speciesName": {
+                  "type": "string"
+                },
+                "start": {
+                  "type": "number"
+                },
+                "rows": {
+                  "type": "number"
+                }
+              }
+            },
+            "elapsedTime": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "V1SpeciesByTraitRequest": {
+      "type": "object",
+      "properties": {
+        "traitNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "V1TraitDataRequest": {
+      "type": "object",
+      "properties": {
+        "traitNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "speciesNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "V2SpeciesDataResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "locationName": {
+                "type": "string"
+              },
+              "year": {
+                "type": "number"
+              },
+              "scientificName": {
+                "type": "string"
+              },
+              "individualCount": {
+                "type": "number"
+              },
+              "datasetName": {
+                "type": "string"
+              },
+              "decimalLongitude": {
+                "type": "number"
+              },
+              "decimalLatitude": {
+                "type": "number"
+              },
+              "geodeticDatum": {
+                "type": "string"
+              },
+              "taxonRemarks": {
+                "type": "string"
+              },
+              "month": {
+                "type": "number"
+              },
+              "locationID": {
+                "type": "string"
+              },
+              "samplingProtocol": {
+                "type": "string"
+              },
+              "bibliographicCitation": {
+                "type": "string"
+              },
+              "eventDate": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responseHeader": {
+          "type": "object",
+          "properties": {
+            "pageNumber": {
+              "type": "number"
+            },
+            "numFound": {
+              "type": "number"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "speciesName": {
+                  "type": "string"
+                },
+                "start": {
+                  "type": "number"
+                },
+                "rows": {
+                  "type": "number"
+                }
+              }
+            },
+            "elapsedTime": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "V2EnvironmentBySpeciesRequest": {
+      "type": "object",
+      "properties": {
+        "speciesNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "V2SpeciesAutocompleteResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "speciesName": {
+            "type": "string"
+          },
+          "recordsHeld": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "500JsonResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "statusCode": {
+          "type": "number"
+        }
+      }
+    },
+    "V1EnvironmentBySpeciesResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "recordsHeld": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "V1TraitBySpeciesResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "recordsHeld": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "V2SpeciesSummaryResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "speciesName": {
+            "type": "string"
+          },
+          "recordsHeld": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "V1TraitDataJsonResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "traits": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "traitName": {
+                      "type": "string"
+                    },
+                    "traitUnit": {
+                      "type": "string"
+                    },
+                    "traitValue": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "year": {
+                "type": "number"
+              },
+              "scientificName": {
+                "type": "string"
+              },
+              "individualCount": {
+                "type": "number"
+              },
+              "decimalLongitude": {
+                "type": "number"
+              },
+              "decimalLatitude": {
+                "type": "number"
+              },
+              "geodeticDatum": {
+                "type": "string"
+              },
+              "taxonRemarks": {
+                "type": "string"
+              },
+              "month": {
+                "type": "number"
+              },
+              "locationID": {
+                "type": "string"
+              },
+              "samplingProtocol": {
+                "type": "string"
+              },
+              "bibliographicCitation": {
+                "type": "string"
+              },
+              "eventDate": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responseHeader": {
+          "type": "object",
+          "properties": {
+            "pageNumber": {
+              "type": "number"
+            },
+            "numFound": {
+              "type": "number"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "traitName": {
+                  "type": "string"
+                },
+                "speciesName": {
+                  "type": "string"
+                },
+                "start": {
+                  "type": "number"
+                },
+                "rows": {
+                  "type": "number"
+                }
+              }
+            },
+            "elapsedTime": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "V2AllSpeciesDataResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "locationName": {
+                "type": "string"
+              },
+              "year": {
+                "type": "number"
+              },
+              "scientificName": {
+                "type": "string"
+              },
+              "individualCount": {
+                "type": "number"
+              },
+              "datasetName": {
+                "type": "string"
+              },
+              "decimalLongitude": {
+                "type": "number"
+              },
+              "decimalLatitude": {
+                "type": "number"
+              },
+              "geodeticDatum": {
+                "type": "string"
+              },
+              "taxonRemarks": {
+                "type": "string"
+              },
+              "month": {
+                "type": "number"
+              },
+              "locationID": {
+                "type": "string"
+              },
+              "samplingProtocol": {
+                "type": "string"
+              },
+              "bibliographicCitation": {
+                "type": "string"
+              },
+              "eventDate": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responseHeader": {
+          "type": "object",
+          "properties": {
+            "pageNumber": {
+              "type": "number"
+            },
+            "numFound": {
+              "type": "number"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "number"
+                },
+                "rows": {
+                  "type": "number"
+                }
+              }
+            },
+            "elapsedTime": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "V1SpeciesSummaryRequest": {
+      "type": "object",
+      "properties": {
+        "speciesNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SamplingProtocolSummaryResponse": {},
+    "CsvResponse": {
+      "type": "string"
+    },
+    "V2TraitBySpeciesResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "recordsHeld": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "V1EnvironmentalVariableVocabResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "recordsHeld": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "code",
+          "label",
+          "recordsHeld"
+        ]
+      }
+    },
+    "V1SpeciesAutocompleteResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "speciesName": {
+            "type": "string"
+          },
+          "recordsHeld": {
+            "type": "number"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "V1SpeciesByTraitResponse": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "recordsHeld": {
+          "type": "number"
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "V2EnvironmentBySpeciesResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "recordsHeld": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "V2SpeciesByTraitRequest": {
+      "type": "object",
+      "properties": {
+        "traitNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "V1EnvDataRequest": {
+      "type": "object",
+      "properties": {
+        "varNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "speciesNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "V1SpeciesSummaryResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "speciesName": {
+            "type": "string"
+          },
+          "recordsHeld": {
+            "type": "number"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "V1AllSpeciesDataResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "month": {
+                "type": "number"
+              },
+              "year": {
+                "type": "number"
+              },
+              "scientificName": {
+                "type": "string"
+              },
+              "locationID": {
+                "type": "string"
+              },
+              "individualCount": {
+                "type": "number"
+              },
+              "decimalLongitude": {
+                "type": "number"
+              },
+              "samplingProtocol": {
+                "type": "string"
+              },
+              "decimalLatitude": {
+                "type": "number"
+              },
+              "geodeticDatum": {
+                "type": "string"
+              },
+              "bibliographicCitation": {
+                "type": "string"
+              },
+              "taxonRemarks": {
+                "type": "string"
+              },
+              "eventDate": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responseHeader": {
+          "type": "object",
+          "properties": {
+            "pageNumber": {
+              "type": "number"
+            },
+            "numFound": {
+              "type": "number"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "number"
+                },
+                "rows": {
+                  "type": "number"
+                }
+              }
+            },
+            "elapsedTime": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "V1TraitBySpeciesRequest": {
+      "type": "object",
+      "properties": {
+        "speciesNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
