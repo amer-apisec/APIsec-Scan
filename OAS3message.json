@@ -340,15 +340,1869 @@
             "exampleSetFlag" : false
           }
         } ],
-        "req...
-Collapse
- This snippet was truncated for display; see it in full
-
-
-
-
-
-
-
-
-
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"userName\":\"av2_security_123@lpl.com\",\"firmId\":1,\"statementTypes\":\"tradeconfirms\",\"accountIds\":\"122671006,122933826,122679473\",\"startDate\":\"01/01/2021\",\"endDate\":\"03/31/2021\",\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-estatement-rtf-api/investor/1.0/document" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"documentId\":\"836710260425\",\"docType\":\"AV_DOCS\",\"userName\":\"av2_security_123@lpl.com\",\"account_number\":\"66962609\",\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-estatement-rtf-api/investor/1.1/listdocuments" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"groupId\":0,\"repId\":\"CCCA\",\"repIdList\":[\"CCCA\",\"CCCA\",\"371A\"],\"accountNumberList\":[\"18693940\",\"66962609\",\"42138267\"],\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-estatement-rtf-api/investor/1.0/uploaddocuments" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "bundleId",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "secureKey",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"docData\":{\"creator\":\"av2_security_123@lpl.com\",\"category\":\"Account\",\"doc_type\":\"AV_DOCS\",\"source_name\":\"AccountView\",\"image_rep_id\":\"CCCA\",\"document_name\":\"UIT_Bulk_Upload_Template.xlsx\",\"document_date\":\"07/21/2021 09:51:29 AM\",\"source_id\":235350,\"firm_id\":1,\"account_number\":\"66962609\",\"client_viewable\":true,\"associated_entity\":\" \"},\"attachment\":\"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\",\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-account-api/investor/1.1/searchletters" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"accountIds\":\"122671006,122933826,122679473\",\"startDate\":\"11/01/2020\",\"endDate\":\"07/21/2021\",\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/accountview/v1/position/quickendownload" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"StartDate\":\"2020-06-30T04:00:00.000Z\",\"EndDate\":\"2021-06-30T04:00:00.000Z\",\"accountId\":\"122671006\",\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-vot-api/investor/1.1/accountvotclientreporting" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "bundleId",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "secureKey",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"accountIds\":[122671006,122933826,122679473],\"period\":\"OneYearTrailing\",\"startDate\":\"\",\"endDate\":\"\",\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-gain-loss-api/investor/2.0/gain-loss" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"search\":{\"accountIds\":[\"122671006\",\"122933826\",\"122679473\"]},\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-paperless-api/investor/2.0/paperless" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"search\":{\"accountIds\":[\"122671006\",\"122679473\",\"122933826\"]},\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-paperless-api/investor/1.1/updatepaperless" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"paperlessSettings\":[{\"accountId\":122671006,\"statementType\":\"Brokerage Statement\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNumberLast4\":\"3940\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"B\"},{\"accountId\":122679473,\"statementType\":\"Brokerage Statement\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNumberLast4\":\"8267\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"B\"},{\"accountId\":122933826,\"statementType\":\"Brokerage Statement\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNumberLast4\":\"2609\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"B\"},{\"accountId\":122671006,\"statementType\":\"Trade Confirmation\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNickName\":\"TEST A\",\"accountNumberLast4\":\"3940\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"C\"},{\"accountId\":122679473,\"statementType\":\"Trade Confirmation\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNickName\":\"A TEST\",\"accountNumberLast4\":\"8267\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"C\"},{\"accountId\":122933826,\"statementType\":\"Trade Confirmation\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNickName\":\"A TEST\",\"accountNumberLast4\":\"2609\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"C\"},{\"accountId\":122671006,\"statementType\":\"eProspectus\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNickName\":\"TEST A\",\"accountNumberLast4\":\"3940\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"E\"},{\"accountId\":122679473,\"statementType\":\"eProspectus\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNickName\":\"A TEST\",\"accountNumberLast4\":\"8267\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"E\"},{\"accountId\":122933826,\"statementType\":\"eProspectus\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNickName\":\"A TEST\",\"accountNumberLast4\":\"2609\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"E\"},{\"accountId\":122671006,\"statementType\":\"Client Letters\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNickName\":\"TEST A\",\"accountNumberLast4\":\"3940\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"L\"},{\"accountId\":122679473,\"statementType\":\"Client Letters\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNickName\":\"A TEST\",\"accountNumberLast4\":\"8267\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"L\"},{\"accountId\":122933826,\"statementType\":\"Client Letters\",\"primaryEmail\":\"av2_security_123@lpl.com\",\"additionalEmails\":[],\"paperlessFlag\":1,\"houseHoldInd\":0,\"accountLocationName\":\"LPL\",\"accountNickName\":\"A TEST\",\"accountNumberLast4\":\"2609\",\"accountType\":\"Non-Qualified\",\"editPermission\":1,\"householdId\":0,\"paperlessStartedDate\":null,\"statementTypeCode\":\"L\"}],\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/accountview/settings/accountsettings" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-user-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"prefName\":\"SelectedAccountIds\",\"prefValue\":false,\"selectedAccountIds\":\"122671006,122679473,122933826\",\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-position-api/investor/2.0/position" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"search\":{\"accountIds\":[\"122671006\",\"122679473\",\"122933826\"]},\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-intraday-micro-api/investor/1.1/intradaycurrent" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"accountIds\":[\"122671006\",\"122679473\",\"122933826\"],\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-account-api/investor/2.0/account" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"search\":{\"accountIds\":[\"122671006\",\"122679473\",\"122933826\"]},\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-profile-api/investor/2.0/profile" : {
+      "description" : "",
+      "get" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-entitlements-api/investor/2.0/entitlements" : {
+      "description" : "",
+      "get" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    },
+    "/investor-account-api/investor/1.1/clientreportingaccountperf" : {
+      "description" : "",
+      "post" : {
+        "description" : "",
+        "parameters" : [ {
+          "name" : "Host",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "User-Agent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Language",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Accept-Encoding",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-access-token",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "x-auth-source",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Content-Length",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Origin",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Connection",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        }, {
+          "name" : "Referer",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "exampleSetFlag" : false
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "example" : "{\"accountIds\":[122671006,122679473,122933826],\"includeGroupPerformance\":true,\"amlbcookie\":\"null\"}"
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "Default response"
+          }
+        }
+      }
+    }
+  }
+}`
